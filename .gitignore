@@ -1,0 +1,30 @@
+# Ambiente virtual
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# Banco de dados local / arquivos temporários
+*.sqlite
+*.sqlite3
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
