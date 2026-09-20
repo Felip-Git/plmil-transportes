@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Empresas - PL Mil Transportes</title>
+</head>
+
+<body>
+
+    <h1>Empresas</h1>
+
+    <a href="{{ url_for('cadastrar_empresa') }}">
+        <button type="button">
+            Cadastrar empresa
+        </button>
+    </a>
+
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for empresa in empresas %}
+            <tr>
+                <td>{{ empresa[0] }}</td>
+                <td>{{ empresa[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
