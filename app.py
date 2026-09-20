@@ -1,11 +1,15 @@
 from flask import Flask
+from database import conectar_banco
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def home():
-    return "Sistema PL Mil funcionando!"
+    conexao = conectar_banco()
+    conexao.close()
+
+    return "Flask conectado ao PostgreSQL!"
 
 
 if __name__ == "__main__":
