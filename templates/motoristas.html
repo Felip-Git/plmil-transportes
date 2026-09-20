@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Motoristas - PL Mil Transportes</title>
+</head>
+
+<body>
+
+    <h1>Motoristas</h1>
+
+    <a href="{{ url_for('cadastrar_motorista') }}">
+        <button type="button">
+            Cadastrar motorista
+        </button>
+    </a>
+
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for motorista in motoristas %}
+            <tr>
+                <td>{{ motorista[0] }}</td>
+                <td>{{ motorista[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
