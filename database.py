@@ -110,3 +110,46 @@ def inserir_funcionario(nome):
 
     cursor.close()
     conexao.close()
+
+
+def buscar_pedidos():
+    conexao = conectar_banco()
+
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT
+            p.id,
+            e.nome,
+            p.data_criacao
+        FROM pedido p
+        JOIN empresa e
+            ON p.empresa_id = e.id
+        ORDER BY p.id;
+    """)
+
+    pedidos = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return pedidos
+
+
+def inserir_pedido(empresa_id):
+    conexao = conectar_banco()
+
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO pedido (empresa_id)
+        VALUES (%s);
+        """,
+        (empresa_id,)
+    )
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()

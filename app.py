@@ -7,7 +7,9 @@ from database import (
     buscar_motoristas,
     inserir_motorista,
     buscar_funcionarios,
-    inserir_funcionario
+    inserir_funcionario,
+    buscar_pedidos,
+    inserir_pedido
 )
 
 
@@ -89,6 +91,34 @@ def cadastrar_funcionario():
         return redirect(url_for("funcionarios"))
 
     return render_template("cadastrar_funcionario.html")
+
+
+@app.route("/pedidos")
+def pedidos():
+    lista_pedidos = buscar_pedidos()
+
+    return render_template(
+        "pedidos.html",
+        pedidos=lista_pedidos
+    )
+
+
+@app.route("/pedidos/cadastrar", methods=["GET", "POST"])
+def cadastrar_pedido():
+
+    if request.method == "POST":
+        empresa_id = request.form["empresa_id"]
+
+        inserir_pedido(empresa_id)
+
+        return redirect(url_for("pedidos"))
+
+    lista_empresas = buscar_empresas()
+
+    return render_template(
+        "cadastrar_pedido.html",
+        empresas=lista_empresas
+    )
 
 
 if __name__ == "__main__":

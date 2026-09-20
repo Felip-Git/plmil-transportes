@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Pedido</title>
+</head>
+
+<body>
+
+    <h1>Cadastrar Pedido</h1>
+
+    <form method="POST">
+
+        <label for="empresa_id">
+            Empresa:
+        </label>
+
+        <select
+            id="empresa_id"
+            name="empresa_id"
+            required
+        >
+
+            <option value="">
+                Selecione uma empresa
+            </option>
+
+            {% for empresa in empresas %}
+
+            <option value="{{ empresa[0] }}">
+                {{ empresa[1] }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <br><br>
+
+        <button type="submit">
+            Cadastrar pedido
+        </button>
+
+    </form>
+
+</body>
+</html>
