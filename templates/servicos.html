@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Serviços</title>
+</head>
+
+<body>
+
+    <h1>Serviços</h1>
+
+
+    <a href="/servicos/cadastrar">
+        Cadastrar novo serviço
+    </a>
+
+
+    <br><br>
+
+
+    {% if servicos %}
+
+    <table border="1" cellpadding="8">
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    ID
+                </th>
+
+                <th>
+                    Empresa
+                </th>
+
+                <th>
+                    Motorista
+                </th>
+
+                <th>
+                    Data
+                </th>
+
+                <th>
+                    KM
+                </th>
+
+                <th>
+                    Valor KM Motorista
+                </th>
+
+                <th>
+                    Valor Motorista
+                </th>
+
+                <th>
+                    Funcionários
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for servico in servicos %}
+
+            <tr>
+
+                <td>
+                    {{ servico[0] }}
+                </td>
+
+                <td>
+                    {{ servico[1] }}
+                </td>
+
+                <td>
+                    {{ servico[2] }}
+                </td>
+
+                <td>
+                    {{ servico[3].strftime('%d/%m/%Y') }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(servico[4]) }}
+                </td>
+
+                <td>
+                    R$ {{ "%.2f"|format(servico[5]) }}
+                </td>
+
+                <td>
+                    R$ {{ "%.2f"|format(servico[6]) }}
+                </td>
+
+                <td>
+                    {{ servico[7] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% else %}
+
+    <p>
+        Nenhum serviço cadastrado.
+    </p>
+
+    {% endif %}
+
+</body>
+
+</html>

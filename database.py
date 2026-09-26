@@ -9,10 +9,10 @@ load_dotenv()
 
 def conectar_banco():
     conexao = psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
+        host="127.0.0.1",
+        port=5432,
+        database="plmil",
+        user="postgres",
         password=os.getenv("DB_PASSWORD")
     )
 
@@ -24,7 +24,13 @@ def buscar_empresas():
 
     cursor = conexao.cursor()
 
-    cursor.execute("SELECT * FROM empresa;")
+    cursor.execute("""
+        SELECT
+            id,
+            nome
+        FROM empresa
+        ORDER BY id;
+    """)
 
     empresas = cursor.fetchall()
 
@@ -40,7 +46,10 @@ def inserir_empresa(nome):
     cursor = conexao.cursor()
 
     cursor.execute(
-        "INSERT INTO empresa (nome) VALUES (%s);",
+        """
+        INSERT INTO empresa (nome)
+        VALUES (%s);
+        """,
         (nome,)
     )
 
@@ -55,7 +64,14 @@ def buscar_motoristas():
 
     cursor = conexao.cursor()
 
-    cursor.execute("SELECT * FROM motorista;")
+    cursor.execute("""
+        SELECT
+            id,
+            nome,
+            valor_km
+        FROM motorista
+        ORDER BY id;
+    """)
 
     motoristas = cursor.fetchall()
 
@@ -65,14 +81,23 @@ def buscar_motoristas():
     return motoristas
 
 
-def inserir_motorista(nome):
+def inserir_motorista(nome, valor_km):
     conexao = conectar_banco()
 
     cursor = conexao.cursor()
 
     cursor.execute(
-        "INSERT INTO motorista (nome) VALUES (%s);",
-        (nome,)
+        """
+        INSERT INTO motorista (
+            nome,
+            valor_km
+        )
+        VALUES (%s, %s);
+        """,
+        (
+            nome,
+            valor_km
+        )
     )
 
     conexao.commit()
@@ -86,7 +111,16 @@ def buscar_funcionarios():
 
     cursor = conexao.cursor()
 
-    cursor.execute("SELECT * FROM funcionario;")
+    cursor.execute("""
+        SELECT
+            f.id,
+            f.nome,
+            e.nome
+        FROM funcionario f
+        JOIN empresa e
+            ON f.empresa_id = e.id
+        ORDER BY f.id;
+    """)
 
     funcionarios = cursor.fetchall()
 
@@ -96,14 +130,48 @@ def buscar_funcionarios():
     return funcionarios
 
 
-def inserir_funcionario(nome):
+def buscar_funcionarios_por_empresa(empresa_id):
     conexao = conectar_banco()
 
     cursor = conexao.cursor()
 
     cursor.execute(
-        "INSERT INTO funcionario (nome) VALUES (%s);",
-        (nome,)
+        """
+        SELECT
+            id,
+            nome
+        FROM funcionario
+        WHERE empresa_id = %s
+        ORDER BY nome;
+        """,
+        (empresa_id,)
+    )
+
+    funcionarios = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return funcionarios
+
+
+def inserir_funcionario(nome, empresa_id):
+    conexao = conectar_banco()
+
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO funcionario (
+            nome,
+            empresa_id
+        )
+        VALUES (%s, %s);
+        """,
+        (
+            nome,
+            empresa_id
+        )
     )
 
     conexao.commit()
@@ -112,42 +180,172 @@ def inserir_funcionario(nome):
     conexao.close()
 
 
-def buscar_pedidos():
+def buscar_servicos():
     conexao = conectar_banco()
 
     cursor = conexao.cursor()
 
     cursor.execute("""
         SELECT
-            p.id,
+            s.id,
             e.nome,
-            p.data_criacao
-        FROM pedido p
+            m.nome,
+            s.data,
+            s.km,
+            s.valor_km_motorista,
+            s.km * s.valor_km_motorista AS valor_motorista,
+
+            COALESCE(
+                STRING_AGG(
+                    f.nome,
+                    ', '
+                    ORDER BY f.nome
+                ),
+                'Nenhum funcionário'
+            ) AS funcionarios
+
+        FROM servico s
+
         JOIN empresa e
-            ON p.empresa_id = e.id
-        ORDER BY p.id;
+            ON s.empresa_id = e.id
+
+        JOIN motorista m
+            ON s.motorista_id = m.id
+
+        LEFT JOIN servico_funcionario sf
+            ON s.id = sf.servico_id
+
+        LEFT JOIN funcionario f
+            ON sf.funcionario_id = f.id
+
+        GROUP BY
+            s.id,
+            e.nome,
+            m.nome,
+            s.data,
+            s.km,
+            s.valor_km_motorista
+
+        ORDER BY s.id;
     """)
 
-    pedidos = cursor.fetchall()
+    servicos = cursor.fetchall()
 
     cursor.close()
     conexao.close()
 
-    return pedidos
+    return servicos
 
 
-def inserir_pedido(empresa_id):
+def inserir_servico(
+    empresa_id,
+    motorista_id,
+    data,
+    km,
+    funcionarios_ids
+):
     conexao = conectar_banco()
 
     cursor = conexao.cursor()
 
+    if not funcionarios_ids:
+        cursor.close()
+        conexao.close()
+
+        raise ValueError(
+            "O serviço precisa ter pelo menos um funcionário."
+        )
+
     cursor.execute(
         """
-        INSERT INTO pedido (empresa_id)
-        VALUES (%s);
+        SELECT
+            valor_km
+        FROM motorista
+        WHERE id = %s;
         """,
-        (empresa_id,)
+        (motorista_id,)
     )
+
+    resultado = cursor.fetchone()
+
+    if resultado is None:
+        cursor.close()
+        conexao.close()
+
+        raise ValueError("Motorista não encontrado.")
+
+    valor_km_motorista = resultado[0]
+
+    funcionarios_ids = [
+        int(funcionario_id)
+        for funcionario_id in funcionarios_ids
+    ]
+
+    cursor.execute(
+        """
+        SELECT
+            id
+        FROM funcionario
+        WHERE empresa_id = %s
+        AND id = ANY(%s);
+        """,
+        (
+            empresa_id,
+            funcionarios_ids
+        )
+    )
+
+    funcionarios_validos = {
+        funcionario[0]
+        for funcionario in cursor.fetchall()
+    }
+
+    if len(funcionarios_validos) != len(set(funcionarios_ids)):
+        cursor.close()
+        conexao.close()
+
+        raise ValueError(
+            "Um ou mais funcionários não pertencem à empresa selecionada."
+        )
+
+    cursor.execute(
+        """
+        INSERT INTO servico (
+            empresa_id,
+            motorista_id,
+            data,
+            km,
+            valor_km_motorista
+        )
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING id;
+        """,
+        (
+            empresa_id,
+            motorista_id,
+            data,
+            km,
+            valor_km_motorista
+        )
+    )
+
+    servico_id = cursor.fetchone()[0]
+
+    for funcionario_id in funcionarios_ids:
+
+        cursor.execute(
+            """
+            INSERT INTO servico_funcionario (
+                servico_id,
+                funcionario_id
+            )
+            VALUES (%s, %s);
+            """,
+            (
+                servico_id,
+                funcionario_id
+            )
+        )
 
     conexao.commit()
 
