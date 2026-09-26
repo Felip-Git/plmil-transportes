@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Editar Serviço
+    </title>
+
+</head>
+
+<body>
+
+    <h1>
+        Editar Serviço #{{ servico[0] }}
+    </h1>
+
+
+    <form
+        method="POST"
+        id="form-servico"
+    >
+
+        <label for="empresa_id">
+            Empresa:
+        </label>
+
+        <select
+            id="empresa_id"
+            name="empresa_id"
+            required
+        >
+
+            <option value="">
+                Selecione uma empresa
+            </option>
+
+            {% for empresa in empresas %}
+
+            <option
+                value="{{ empresa[0] }}"
+                {% if empresa[0] == servico[1] %}
+                    selected
+                {% endif %}
+            >
+                {{ empresa[1] }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <br><br>
+
+
+        <label for="motorista_id">
+            Motorista:
+        </label>
+
+        <select
+            id="motorista_id"
+            name="motorista_id"
+            required
+        >
+
+            <option value="">
+                Selecione um motorista
+            </option>
+
+            {% for motorista in motoristas %}
+
+            <option
+                value="{{ motorista[0] }}"
+                {% if motorista[0] == servico[2] %}
+                    selected
+                {% endif %}
+            >
+                {{ motorista[1] }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <br><br>
+
+
+        <label for="data">
+            Data:
+        </label>
+
+        <input
+            type="date"
+            id="data"
+            name="data"
+            value="{{ servico[3].strftime('%Y-%m-%d') }}"
+            required
+        >
+
+
+        <br><br>
+
+
+        <label for="km">
+            KM:
+        </label>
+
+        <input
+            type="number"
+            id="km"
+            name="km"
+            step="0.01"
+            min="0"
+            value="{{ servico[4] }}"
+            required
+        >
+
+
+        <br><br>
+
+
+        <h2>
+            Funcionários
+        </h2>
+
+
+        <label for="busca-funcionario">
+            Buscar funcionário:
+        </label>
+
+        <input
+            type="text"
+            id="busca-funcionario"
+            placeholder="Digite o nome do funcionário"
+            disabled
+        >
+
+
+        <br><br>
+
+
+        <div id="lista-funcionarios">
+
+            <p>
+                Carregando funcionários...
+            </p>
+
+        </div>
+
+
+        <br>
+
+
+        <h3>
+            Funcionários selecionados
+        </h3>
+
+
+        <div id="funcionarios-selecionados">
+
+            <p id="nenhum-selecionado">
+                Nenhum funcionário selecionado.
+            </p>
+
+        </div>
+
+
+        <br><br>
+
+
+        <button type="submit">
+            Salvar alterações
+        </button>
+
+        <a href="{{ url_for('servicos') }}">
+            Cancelar
+        </a>
+
+    </form>
+
+
+    <script>
+
+        const empresaSelect =
+            document.getElementById("empresa_id");
+
+        const buscaFuncionario =
+            document.getElementById("busca-funcionario");
+
+        const listaFuncionarios =
+            document.getElementById("lista-funcionarios");
+
+        const funcionariosSelecionados =
+            document.getElementById("funcionarios-selecionados");
+
+        const nenhumSelecionado =
+            document.getElementById("nenhum-selecionado");
+
+        const formServico =
+            document.getElementById("form-servico");
+
+
+        let funcionarios = [];
+
+        let selecionados = new Map();
+
+
+        const funcionariosIniciais =
+            {{ funcionarios_selecionados | tojson }};
+
+
+        empresaSelect.addEventListener(
+            "change",
+            carregarFuncionarios
+        );
+
+
+        async function carregarFuncionarios() {
+
+            const empresaId =
+                empresaSelect.value;
+
+
+            funcionarios = [];
+
+
+            if (!empresaId) {
+
+                selecionados.clear();
+
+                atualizarSelecionados();
+
+                buscaFuncionario.disabled = true;
+
+                buscaFuncionario.value = "";
+
+                listaFuncionarios.innerHTML =
+                    "<p>Nenhuma empresa selecionada.</p>";
+
+                return;
+            }
+
+
+            buscaFuncionario.disabled = false;
+
+            buscaFuncionario.value = "";
+
+            listaFuncionarios.innerHTML =
+                "<p>Carregando funcionários...</p>";
+
+
+            try {
+
+                const resposta = await fetch(
+                    `/funcionarios/empresa/${empresaId}`
+                );
+
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+                        "Erro ao buscar funcionários."
+                    );
+
+                }
+
+
+                funcionarios =
+                    await resposta.json();
+
+
+                renderizarFuncionarios();
+
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                listaFuncionarios.innerHTML =
+                    "<p>Não foi possível carregar os funcionários.</p>";
+
+            }
+
+        }
+
+
+        buscaFuncionario.addEventListener(
+            "input",
+            renderizarFuncionarios
+        );
+
+
+        function renderizarFuncionarios() {
+
+            const busca =
+                buscaFuncionario.value
+                    .toLowerCase()
+                    .trim();
+
+
+            const funcionariosFiltrados =
+                funcionarios.filter(
+                    funcionario =>
+                        funcionario.nome
+                            .toLowerCase()
+                            .includes(busca)
+                );
+
+
+            listaFuncionarios.innerHTML = "";
+
+
+            if (funcionariosFiltrados.length === 0) {
+
+                listaFuncionarios.innerHTML =
+                    "<p>Nenhum funcionário encontrado.</p>";
+
+                return;
+
+            }
+
+
+            funcionariosFiltrados.forEach(
+                funcionario => {
+
+                    const item =
+                        document.createElement("div");
+
+
+                    const nome =
+                        document.createElement("span");
+
+                    nome.textContent =
+                        funcionario.nome;
+
+
+                    const botao =
+                        document.createElement("button");
+
+                    botao.type = "button";
+
+                    botao.textContent =
+                        selecionados.has(funcionario.id)
+                            ? "Adicionado"
+                            : "Adicionar";
+
+
+                    botao.disabled =
+                        selecionados.has(funcionario.id);
+
+
+                    botao.addEventListener(
+                        "click",
+                        function () {
+
+                            adicionarFuncionario(
+                                funcionario
+                            );
+
+                        }
+                    );
+
+
+                    item.appendChild(nome);
+
+                    item.appendChild(
+                        document.createTextNode(" ")
+                    );
+
+                    item.appendChild(botao);
+
+                    listaFuncionarios.appendChild(item);
+
+                }
+            );
+
+        }
+
+
+        function adicionarFuncionario(
+            funcionario
+        ) {
+
+            selecionados.set(
+                funcionario.id,
+                funcionario
+            );
+
+
+            atualizarSelecionados();
+
+            renderizarFuncionarios();
+
+        }
+
+
+        function removerFuncionario(
+            funcionarioId
+        ) {
+
+            selecionados.delete(
+                funcionarioId
+            );
+
+
+            atualizarSelecionados();
+
+            renderizarFuncionarios();
+
+        }
+
+
+        function atualizarSelecionados() {
+
+            const itensAntigos =
+                document.querySelectorAll(
+                    ".funcionario-hidden"
+                );
+
+
+            itensAntigos.forEach(
+                item => item.remove()
+            );
+
+
+            const itensSelecionados =
+                funcionariosSelecionados.querySelectorAll(
+                    ".funcionario-selecionado"
+                );
+
+
+            itensSelecionados.forEach(
+                item => item.remove()
+            );
+
+
+            if (selecionados.size === 0) {
+
+                nenhumSelecionado.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            nenhumSelecionado.style.display =
+                "none";
+
+
+            selecionados.forEach(
+                funcionario => {
+
+                    const item =
+                        document.createElement("div");
+
+                    item.className =
+                        "funcionario-selecionado";
+
+
+                    const nome =
+                        document.createElement("span");
+
+                    nome.textContent =
+                        funcionario.nome;
+
+
+                    const botao =
+                        document.createElement("button");
+
+                    botao.type = "button";
+
+                    botao.textContent =
+                        "Remover";
+
+
+                    botao.addEventListener(
+                        "click",
+                        function () {
+
+                            removerFuncionario(
+                                funcionario.id
+                            );
+
+                        }
+                    );
+
+
+                    item.appendChild(nome);
+
+                    item.appendChild(
+                        document.createTextNode(" ")
+                    );
+
+                    item.appendChild(botao);
+
+                    funcionariosSelecionados.appendChild(
+                        item
+                    );
+
+
+                    const hidden =
+                        document.createElement("input");
+
+                    hidden.type = "hidden";
+
+                    hidden.name =
+                        "funcionarios_ids";
+
+                    hidden.value =
+                        funcionario.id;
+
+                    hidden.className =
+                        "funcionario-hidden";
+
+
+                    formServico.appendChild(
+                        hidden
+                    );
+
+                }
+            );
+
+        }
+
+
+        formServico.addEventListener(
+            "submit",
+            function (evento) {
+
+                if (selecionados.size === 0) {
+
+                    evento.preventDefault();
+
+                    alert(
+                        "Selecione pelo menos um funcionário."
+                    );
+
+                }
+
+            }
+        );
+
+
+        async function carregarFuncionariosIniciais() {
+
+            const empresaId =
+                empresaSelect.value;
+
+
+            if (!empresaId) {
+
+                return;
+
+            }
+
+
+            buscaFuncionario.disabled = false;
+
+
+            try {
+
+                const resposta = await fetch(
+                    `/funcionarios/empresa/${empresaId}`
+                );
+
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+                        "Erro ao buscar funcionários."
+                    );
+
+                }
+
+
+                funcionarios =
+                    await resposta.json();
+
+
+                funcionarios.forEach(
+                    funcionario => {
+
+                        if (
+                            funcionariosIniciais.includes(
+                                funcionario.id
+                            )
+                        ) {
+
+                            selecionados.set(
+                                funcionario.id,
+                                funcionario
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                atualizarSelecionados();
+
+                renderizarFuncionarios();
+
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                listaFuncionarios.innerHTML =
+                    "<p>Não foi possível carregar os funcionários.</p>";
+
+            }
+
+        }
+
+
+        carregarFuncionariosIniciais();
+
+    </script>
+
+</body>
+
+</html>

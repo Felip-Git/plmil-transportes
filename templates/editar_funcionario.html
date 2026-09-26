@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Funcionário</title>
+</head>
+
+<body>
+
+    <h1>Editar Funcionário</h1>
+
+    <form method="POST">
+
+        <label for="nome">
+            Nome do funcionário:
+        </label>
+
+        <input
+            type="text"
+            id="nome"
+            name="nome"
+            value="{{ funcionario[1] }}"
+            required
+        >
+
+        <br><br>
+
+        <label for="empresa_id">
+            Empresa:
+        </label>
+
+        <select
+            id="empresa_id"
+            name="empresa_id"
+            required
+        >
+
+            <option value="">
+                Selecione uma empresa
+            </option>
+
+            {% for empresa in empresas %}
+
+            <option
+                value="{{ empresa[0] }}"
+                {% if empresa[0] == funcionario[2] %}
+                    selected
+                {% endif %}
+            >
+                {{ empresa[1] }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <br><br>
+
+        <button type="submit">
+            Salvar alterações
+        </button>
+
+        <a href="{{ url_for('funcionarios') }}">
+            Cancelar
+        </a>
+
+    </form>
+
+</body>
+
+</html>

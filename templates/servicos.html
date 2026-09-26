@@ -26,6 +26,7 @@
             id="empresa_id"
             name="empresa_id"
         >
+
             <option value="">
                 Todas as empresas
             </option>
@@ -51,7 +52,10 @@
             Mês:
         </label>
 
-        <select id="mes" name="mes">
+        <select
+            id="mes"
+            name="mes"
+        >
 
             <option value="">
                 Todos os meses
@@ -78,7 +82,10 @@
             Ano:
         </label>
 
-        <select id="ano" name="ano">
+        <select
+            id="ano"
+            name="ano"
+        >
 
             <option value="">
                 Todos os anos
@@ -120,6 +127,7 @@
     <table border="1" cellpadding="8">
 
         <thead>
+
             <tr>
                 <th>ID</th>
                 <th>Empresa</th>
@@ -129,7 +137,9 @@
                 <th>Valor KM Motorista</th>
                 <th>Valor Motorista</th>
                 <th>Funcionários</th>
+                <th>Ações</th>
             </tr>
+
         </thead>
 
         <tbody>
@@ -137,14 +147,66 @@
             {% for servico in servicos %}
 
             <tr>
-                <td>{{ servico[0] }}</td>
-                <td>{{ servico[1] }}</td>
-                <td>{{ servico[2] }}</td>
-                <td>{{ servico[3].strftime('%d/%m/%Y') }}</td>
-                <td>{{ "%.2f"|format(servico[4]) }}</td>
-                <td>R$ {{ "%.2f"|format(servico[5]) }}</td>
-                <td>R$ {{ "%.2f"|format(servico[6]) }}</td>
-                <td>{{ servico[7] }}</td>
+
+                <td>
+                    {{ servico[0] }}
+                </td>
+
+                <td>
+                    {{ servico[1] }}
+                </td>
+
+                <td>
+                    {{ servico[2] }}
+                </td>
+
+                <td>
+                    {{ servico[3].strftime('%d/%m/%Y') }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(servico[4]) }}
+                </td>
+
+                <td>
+                    R$ {{ "%.2f"|format(servico[5]) }}
+                </td>
+
+                <td>
+                    R$ {{ "%.2f"|format(servico[6]) }}
+                </td>
+
+                <td>
+                    {{ servico[7] }}
+                </td>
+
+                <td>
+
+                    <a href="{{ url_for(
+                        'editar_servico',
+                        servico_id=servico[0]
+                    ) }}">
+                        Editar
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'excluir_servico_rota',
+                            servico_id=servico[0]
+                        ) }}"
+                        style="display: inline;"
+                        onsubmit="return confirmarExclusao();"
+                    >
+
+                        <button type="submit">
+                            Excluir
+                        </button>
+
+                    </form>
+
+                </td>
+
             </tr>
 
             {% endfor %}
@@ -160,6 +222,19 @@
     </p>
 
     {% endif %}
+
+
+    <script>
+
+        function confirmarExclusao() {
+
+            return confirm(
+                "Tem certeza que deseja excluir este serviço?"
+            );
+
+        }
+
+    </script>
 
 </body>
 
