@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <title>Motoristas - PL Mil Transportes</title>
+    <title>Motoristas</title>
 </head>
 
 <body>
@@ -10,34 +11,89 @@
     <h1>Motoristas</h1>
 
     <a href="{{ url_for('cadastrar_motorista') }}">
-        <button type="button">
-            Cadastrar motorista
-        </button>
+        Cadastrar novo motorista
     </a>
 
     <br><br>
 
-    <table border="1">
+    {% if motoristas %}
+
+    <table border="1" cellpadding="8">
+
         <thead>
+
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Valor por KM</th>
+                <th>Ações</th>
             </tr>
+
         </thead>
 
         <tbody>
+
             {% for motorista in motoristas %}
+
             <tr>
-                <td>{{ motorista[0] }}</td>
-                <td>{{ motorista[1] }}</td>
+
                 <td>
-                    R$ {{ "%.2f"|format(motorista[2])|replace(".", ",") }}
+                    {{ motorista[0] }}
                 </td>
+
+                <td>
+                    {{ motorista[1] }}
+                </td>
+
+                <td>
+                    R$ {{ "%.2f"|format(motorista[2]) }}
+                </td>
+
+                <td>
+
+                    <a href="{{ url_for(
+                        'editar_motorista',
+                        motorista_id=motorista[0]
+                    ) }}">
+                        Editar
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'excluir_motorista_rota',
+                            motorista_id=motorista[0]
+                        ) }}"
+                        style="display: inline;"
+                        onsubmit="return confirm(
+                            'Tem certeza que deseja excluir este motorista?'
+                        );"
+                    >
+
+                        <button type="submit">
+                            Excluir
+                        </button>
+
+                    </form>
+
+                </td>
+
             </tr>
+
             {% endfor %}
+
         </tbody>
+
     </table>
 
+    {% else %}
+
+    <p>
+        Nenhum motorista cadastrado.
+    </p>
+
+    {% endif %}
+
 </body>
+
 </html>

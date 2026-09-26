@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <title>Empresas - PL Mil Transportes</title>
+    <title>Empresas</title>
 </head>
 
 <body>
@@ -10,30 +11,84 @@
     <h1>Empresas</h1>
 
     <a href="{{ url_for('cadastrar_empresa') }}">
-        <button type="button">
-            Cadastrar empresa
-        </button>
+        Cadastrar nova empresa
     </a>
 
     <br><br>
 
-    <table border="1">
+    {% if empresas %}
+
+    <table border="1" cellpadding="8">
+
         <thead>
+
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
+                <th>Ações</th>
             </tr>
+
         </thead>
 
         <tbody>
+
             {% for empresa in empresas %}
+
             <tr>
-                <td>{{ empresa[0] }}</td>
-                <td>{{ empresa[1] }}</td>
+
+                <td>
+                    {{ empresa[0] }}
+                </td>
+
+                <td>
+                    {{ empresa[1] }}
+                </td>
+
+                <td>
+
+                    <a href="{{ url_for(
+                        'editar_empresa',
+                        empresa_id=empresa[0]
+                    ) }}">
+                        Editar
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'excluir_empresa_rota',
+                            empresa_id=empresa[0]
+                        ) }}"
+                        style="display: inline;"
+                        onsubmit="return confirm(
+                            'Tem certeza que deseja excluir esta empresa?'
+                        );"
+                    >
+
+                        <button type="submit">
+                            Excluir
+                        </button>
+
+                    </form>
+
+                </td>
+
             </tr>
+
             {% endfor %}
+
         </tbody>
+
     </table>
 
+    {% else %}
+
+    <p>
+        Nenhuma empresa cadastrada.
+    </p>
+
+    {% endif %}
+
 </body>
+
 </html>
