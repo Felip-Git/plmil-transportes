@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
+
     <title>Cadastrar Funcionário</title>
 </head>
 
@@ -9,9 +11,12 @@
 
     <h1>Cadastrar Funcionário</h1>
 
+
     <form method="POST">
 
-        <label for="nome">Nome do funcionário:</label>
+        <label for="nome">
+            Nome do funcionário:
+        </label>
 
         <input
             type="text"
@@ -20,11 +25,44 @@
             required
         >
 
+
+        <br><br>
+
+
+        <label for="empresa_id">
+            Empresa:
+        </label>
+
+        <select
+            id="empresa_id"
+            name="empresa_id"
+            required
+        >
+
+            <option value="">
+                Selecione uma empresa
+            </option>
+
+            {% for empresa in empresas %}
+
+            <option value="{{ empresa[0] }}">
+                {{ empresa[1] }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <br><br>
+
+
         <button type="submit">
-            Cadastrar
+            Cadastrar funcionário
         </button>
 
     </form>
 
 </body>
+
 </html>
