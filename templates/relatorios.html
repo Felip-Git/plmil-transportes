@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - PL Mil Transportes</title>
+</head>
+<body>
+
+    <h1>Relatório Mensal</h1>
+
+    <form method="GET" action="{{ url_for('relatorios') }}">
+
+        <label for="empresa_id">Empresa:</label>
+        <select name="empresa_id" id="empresa_id" required>
+            <option value="">Selecione uma empresa</option>
+
+            {% for empresa in empresas %}
+                <option
+                    value="{{ empresa[0] }}"
+                    {% if empresa_selecionada == empresa[0] %}
+                        selected
+                    {% endif %}
+                >
+                    {{ empresa[1] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="mes">Mês:</label>
+        <select name="mes" id="mes" required>
+            <option value="">Selecione o mês</option>
+
+            {% for mes_item in meses %}
+                <option
+                    value="{{ mes_item[0] }}"
+                    {% if mes_selecionado == mes_item[0] %}
+                        selected
+                    {% endif %}
+                >
+                    {{ mes_item[1] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="ano">Ano:</label>
+        <select name="ano" id="ano" required>
+            <option value="">Selecione o ano</option>
+
+            {% for ano_item in anos %}
+                <option
+                    value="{{ ano_item }}"
+                    {% if ano_selecionado == ano_item %}
+                        selected
+                    {% endif %}
+                >
+                    {{ ano_item }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Gerar relatório</button>
+
+    </form>
+
+    <hr>
+
+    {% if resumo is not none %}
+
+        <h2>
+            {{ empresa_selecionada_nome }}
+        </h2>
+
+        <p>
+            Período:
+            {{ "%02d"|format(mes_selecionado) }}/{{ ano_selecionado }}
+        </p>
+
+        <h3>Resumo</h3>
+
+        <ul>
+            <li>
+                Serviços realizados:
+                <strong>{{ resumo[0] }}</strong>
+            </li>
+
+            <li>
+                KM percorridos:
+                <strong>{{ "%.2f"|format(resumo[1]) }}</strong>
+            </li>
+
+            <li>
+                Funcionários transportados:
+                <strong>{{ resumo[2] }}</strong>
+            </li>
+
+            <li>
+                Total pago aos motoristas:
+                <strong>
+                    R$ {{ "%.2f"|format(resumo[3]) }}
+                </strong>
+            </li>
+        </ul>
+
+        <h3>Resumo por motorista</h3>
+
+        {% if resumo_motoristas %}
+
+            <table border="1" cellpadding="8">
+                <thead>
+                    <tr>
+                        <th>Motorista</th>
+                        <th>Serviços</th>
+                        <th>KM</th>
+                        <th>Valor motorista</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for motorista in resumo_motoristas %}
+                        <tr>
+                            <td>{{ motorista[0] }}</td>
+                            <td>{{ motorista[1] }}</td>
+                            <td>
+                                {{ "%.2f"|format(motorista[2]) }}
+                            </td>
+                            <td>
+                                R$ {{ "%.2f"|format(motorista[3]) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+
+            <p>Nenhum motorista encontrado no período.</p>
+
+        {% endif %}
+
+        <h3>Serviços do período</h3>
+
+        {% if servicos %}
+
+            <table border="1" cellpadding="8">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data</th>
+                        <th>Motorista</th>
+                        <th>Funcionários</th>
+                        <th>KM</th>
+                        <th>Valor KM</th>
+                        <th>Valor motorista</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for servico in servicos %}
+                        <tr>
+                            <td>{{ servico[0] }}</td>
+
+                            <td>
+                                {{ servico[3].strftime("%d/%m/%Y") }}
+                            </td>
+
+                            <td>{{ servico[2] }}</td>
+
+                            <td>{{ servico[7] }}</td>
+
+                            <td>
+                                {{ "%.2f"|format(servico[4]) }}
+                            </td>
+
+                            <td>
+                                R$ {{ "%.2f"|format(servico[5]) }}
+                            </td>
+
+                            <td>
+                                R$ {{ "%.2f"|format(servico[6]) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+
+            <p>
+                Nenhum serviço encontrado para a empresa e período
+                selecionados.
+            </p>
+
+        {% endif %}
+
+    {% elif empresa_selecionada or mes_selecionado or ano_selecionado %}
+
+        <p>
+            Selecione empresa, mês e ano para gerar o relatório.
+        </p>
+
+    {% endif %}
+
+    <br>
+
+    <a href="{{ url_for('servicos') }}">
+        Voltar para serviços
+    </a>
+
+</body>
+</html>

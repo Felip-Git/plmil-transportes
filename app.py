@@ -29,6 +29,8 @@ from database import (
     excluir_funcionario,
     buscar_servicos_filtrados,
     buscar_anos_servicos,
+    buscar_resumo_relatorio,
+    buscar_resumo_motoristas_relatorio,
     buscar_servico_por_id,
     buscar_funcionarios_do_servico,
     inserir_servico,
@@ -356,6 +358,113 @@ def funcionarios_por_empresa(empresa_id):
 
 
 # ============================================================
+# RELATÓRIOS
+# ============================================================
+
+@app.route("/relatorios")
+def relatorios():
+
+    empresa_id = request.args.get(
+        "empresa_id"
+    ) or None
+
+    mes = request.args.get(
+        "mes"
+    ) or None
+
+    ano = request.args.get(
+        "ano"
+    ) or None
+
+    if empresa_id and empresa_id.isdigit():
+        empresa_id = int(empresa_id)
+    else:
+        empresa_id = None
+
+    if mes and mes.isdigit() and 1 <= int(mes) <= 12:
+        mes = int(mes)
+    else:
+        mes = None
+
+    if ano and ano.isdigit():
+        ano = int(ano)
+    else:
+        ano = None
+
+    lista_empresas = buscar_empresas()
+    anos = buscar_anos_servicos()
+
+    ano_atual = datetime.now().year
+
+    if ano_atual not in anos:
+        anos.append(ano_atual)
+
+    anos = sorted(
+        anos,
+        reverse=True
+    )
+
+    meses = [
+        (1, "Janeiro"),
+        (2, "Fevereiro"),
+        (3, "Março"),
+        (4, "Abril"),
+        (5, "Maio"),
+        (6, "Junho"),
+        (7, "Julho"),
+        (8, "Agosto"),
+        (9, "Setembro"),
+        (10, "Outubro"),
+        (11, "Novembro"),
+        (12, "Dezembro")
+    ]
+
+    servicos = []
+    resumo = None
+    resumo_motoristas = []
+    empresa_selecionada_nome = None
+
+    if empresa_id and mes and ano:
+
+        servicos = buscar_servicos_filtrados(
+            empresa_id=empresa_id,
+            mes=mes,
+            ano=ano
+        )
+
+        resumo = buscar_resumo_relatorio(
+            empresa_id,
+            mes,
+            ano
+        )
+
+        resumo_motoristas = buscar_resumo_motoristas_relatorio(
+            empresa_id,
+            mes,
+            ano
+        )
+
+        for empresa in lista_empresas:
+            if empresa[0] == empresa_id:
+                empresa_selecionada_nome = empresa[1]
+                break
+
+    return render_template(
+        "relatorios.html",
+        servicos=servicos,
+        resumo=resumo,
+        resumo_motoristas=resumo_motoristas,
+        empresas=lista_empresas,
+        anos=anos,
+        meses=meses,
+        empresa_selecionada=empresa_id,
+        mes_selecionado=mes,
+        ano_selecionado=ano,
+        empresa_selecionada_nome=empresa_selecionada_nome
+    )
+
+
+# ============================================================
 # SERVIÇOS
 # ============================================================
 
@@ -451,7 +560,6 @@ def cadastrar_servico():
         data = request.form["data"]
 
         km = request.form["km"]
-
         funcionarios_ids = request.form.getlist(
             "funcionarios_ids"
         )
