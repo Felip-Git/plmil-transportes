@@ -20,6 +20,56 @@
     <br><br>
 
 
+    <form method="GET" action="/servicos">
+
+        <label for="empresa_id">
+            Empresa:
+        </label>
+
+
+        <select
+            id="empresa_id"
+            name="empresa_id"
+        >
+
+            <option value="">
+                Todas as empresas
+            </option>
+
+
+            {% for empresa in empresas %}
+
+            <option
+                value="{{ empresa[0] }}"
+                {% if empresa_selecionada == empresa[0]|string %}
+                    selected
+                {% endif %}
+            >
+
+                {{ empresa[1] }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <button type="submit">
+            Filtrar
+        </button>
+
+
+        <a href="/servicos">
+            Limpar filtro
+        </a>
+
+    </form>
+
+
+    <br><br>
+
+
     {% if servicos %}
 
     <table border="1" cellpadding="8">
@@ -114,7 +164,7 @@
     {% else %}
 
     <p>
-        Nenhum serviço cadastrado.
+        Nenhum serviço encontrado.
     </p>
 
     {% endif %}

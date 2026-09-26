@@ -19,6 +19,7 @@ from database import (
     buscar_funcionarios_por_empresa,
     inserir_funcionario,
     buscar_servicos,
+    buscar_servicos_por_empresa,
     inserir_servico
 )
 
@@ -138,11 +139,29 @@ def funcionarios_por_empresa(empresa_id):
 
 @app.route("/servicos")
 def servicos():
-    lista_servicos = buscar_servicos()
+
+    empresa_id = request.args.get("empresa_id")
+
+
+    if empresa_id:
+
+        lista_servicos = buscar_servicos_por_empresa(
+            empresa_id
+        )
+
+    else:
+
+        lista_servicos = buscar_servicos()
+
+
+    lista_empresas = buscar_empresas()
+
 
     return render_template(
         "servicos.html",
-        servicos=lista_servicos
+        servicos=lista_servicos,
+        empresas=lista_empresas,
+        empresa_selecionada=empresa_id
     )
 
 
