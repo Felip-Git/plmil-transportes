@@ -237,6 +237,68 @@ def buscar_servicos():
     return servicos
 
 
+def buscar_servicos_por_empresa(empresa_id):
+    conexao = conectar_banco()
+
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            s.id,
+            e.nome,
+            m.nome,
+            s.data,
+            s.km,
+            s.valor_km_motorista,
+            s.km * s.valor_km_motorista AS valor_motorista,
+
+            COALESCE(
+                STRING_AGG(
+                    f.nome,
+                    ', '
+                    ORDER BY f.nome
+                ),
+                'Nenhum funcionário'
+            ) AS funcionarios
+
+        FROM servico s
+
+        JOIN empresa e
+            ON s.empresa_id = e.id
+
+        JOIN motorista m
+            ON s.motorista_id = m.id
+
+        LEFT JOIN servico_funcionario sf
+            ON s.id = sf.servico_id
+
+        LEFT JOIN funcionario f
+            ON sf.funcionario_id = f.id
+
+        WHERE s.empresa_id = %s
+
+        GROUP BY
+            s.id,
+            e.nome,
+            m.nome,
+            s.data,
+            s.km,
+            s.valor_km_motorista
+
+        ORDER BY s.id;
+        """,
+        (empresa_id,)
+    )
+
+    servicos = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return servicos
+
+
 def inserir_servico(
     empresa_id,
     motorista_id,
