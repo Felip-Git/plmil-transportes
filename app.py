@@ -18,8 +18,8 @@ from database import (
     buscar_funcionarios,
     buscar_funcionarios_por_empresa,
     inserir_funcionario,
-    buscar_servicos,
-    buscar_servicos_por_empresa,
+    buscar_servicos_filtrados,
+    buscar_anos_servicos,
     inserir_servico
 )
 
@@ -101,7 +101,6 @@ def cadastrar_funcionario():
 
     if request.method == "POST":
         nome = request.form["nome"]
-
         empresa_id = request.form["empresa_id"]
 
         inserir_funcionario(
@@ -140,28 +139,67 @@ def funcionarios_por_empresa(empresa_id):
 @app.route("/servicos")
 def servicos():
 
-    empresa_id = request.args.get("empresa_id")
+    empresa_id = request.args.get("empresa_id") or None
+    mes = request.args.get("mes") or None
+    ano = request.args.get("ano") or None
 
-
-    if empresa_id:
-
-        lista_servicos = buscar_servicos_por_empresa(
-            empresa_id
-        )
-
+    # Converte os filtros numéricos, ignorando valores inválidos.
+    if empresa_id and empresa_id.isdigit():
+        empresa_id = int(empresa_id)
     else:
+        empresa_id = None
 
-        lista_servicos = buscar_servicos()
+    if mes and mes.isdigit() and 1 <= int(mes) <= 12:
+        mes = int(mes)
+    else:
+        mes = None
 
+    if ano and ano.isdigit():
+        ano = int(ano)
+    else:
+        ano = None
+
+    lista_servicos = buscar_servicos_filtrados(
+        empresa_id=empresa_id,
+        mes=mes,
+        ano=ano
+    )
 
     lista_empresas = buscar_empresas()
 
+    anos = buscar_anos_servicos()
+
+    ano_atual = datetime.now().year
+
+    if ano_atual not in anos:
+        anos.append(ano_atual)
+
+    anos = sorted(anos, reverse=True)
+
+    meses = [
+        (1, "Janeiro"),
+        (2, "Fevereiro"),
+        (3, "Março"),
+        (4, "Abril"),
+        (5, "Maio"),
+        (6, "Junho"),
+        (7, "Julho"),
+        (8, "Agosto"),
+        (9, "Setembro"),
+        (10, "Outubro"),
+        (11, "Novembro"),
+        (12, "Dezembro")
+    ]
 
     return render_template(
         "servicos.html",
         servicos=lista_servicos,
         empresas=lista_empresas,
-        empresa_selecionada=empresa_id
+        anos=anos,
+        meses=meses,
+        empresa_selecionada=empresa_id,
+        mes_selecionado=mes,
+        ano_selecionado=ano
     )
 
 
@@ -171,11 +209,8 @@ def cadastrar_servico():
     if request.method == "POST":
 
         empresa_id = request.form["empresa_id"]
-
         motorista_id = request.form["motorista_id"]
-
         data = request.form["data"]
-
         km = request.form["km"]
 
         funcionarios_ids = request.form.getlist(
@@ -198,7 +233,6 @@ def cadastrar_servico():
         return redirect(url_for("servicos"))
 
     lista_empresas = buscar_empresas()
-
     lista_motoristas = buscar_motoristas()
 
     return render_template(
@@ -209,4 +243,4 @@ def cadastrar_servico():
 
 
 if __name__ == "__main__":
-    app.run(debug=True) 
+    app.run(debug=True)
