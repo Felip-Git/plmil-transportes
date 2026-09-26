@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-
     <title>Serviços</title>
 </head>
 
@@ -11,14 +10,11 @@
 
     <h1>Serviços</h1>
 
-
     <a href="/servicos/cadastrar">
         Cadastrar novo serviço
     </a>
 
-
     <br><br>
-
 
     <form method="GET" action="/servicos">
 
@@ -26,133 +22,129 @@
             Empresa:
         </label>
 
-
         <select
             id="empresa_id"
             name="empresa_id"
         >
-
             <option value="">
                 Todas as empresas
             </option>
-
 
             {% for empresa in empresas %}
 
             <option
                 value="{{ empresa[0] }}"
-                {% if empresa_selecionada == empresa[0]|string %}
+                {% if empresa_selecionada == empresa[0] %}
                     selected
                 {% endif %}
             >
-
                 {{ empresa[1] }}
-
             </option>
 
             {% endfor %}
 
         </select>
 
+        &nbsp;
+
+        <label for="mes">
+            Mês:
+        </label>
+
+        <select id="mes" name="mes">
+
+            <option value="">
+                Todos os meses
+            </option>
+
+            {% for numero, nome in meses %}
+
+            <option
+                value="{{ numero }}"
+                {% if mes_selecionado == numero %}
+                    selected
+                {% endif %}
+            >
+                {{ nome }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        &nbsp;
+
+        <label for="ano">
+            Ano:
+        </label>
+
+        <select id="ano" name="ano">
+
+            <option value="">
+                Todos os anos
+            </option>
+
+            {% for ano in anos %}
+
+            <option
+                value="{{ ano }}"
+                {% if ano_selecionado == ano %}
+                    selected
+                {% endif %}
+            >
+                {{ ano }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        &nbsp;
 
         <button type="submit">
             Filtrar
         </button>
 
+        &nbsp;
 
         <a href="/servicos">
-            Limpar filtro
+            Limpar filtros
         </a>
 
     </form>
 
-
     <br><br>
-
 
     {% if servicos %}
 
     <table border="1" cellpadding="8">
 
         <thead>
-
             <tr>
-
-                <th>
-                    ID
-                </th>
-
-                <th>
-                    Empresa
-                </th>
-
-                <th>
-                    Motorista
-                </th>
-
-                <th>
-                    Data
-                </th>
-
-                <th>
-                    KM
-                </th>
-
-                <th>
-                    Valor KM Motorista
-                </th>
-
-                <th>
-                    Valor Motorista
-                </th>
-
-                <th>
-                    Funcionários
-                </th>
-
+                <th>ID</th>
+                <th>Empresa</th>
+                <th>Motorista</th>
+                <th>Data</th>
+                <th>KM</th>
+                <th>Valor KM Motorista</th>
+                <th>Valor Motorista</th>
+                <th>Funcionários</th>
             </tr>
-
         </thead>
-
 
         <tbody>
 
             {% for servico in servicos %}
 
             <tr>
-
-                <td>
-                    {{ servico[0] }}
-                </td>
-
-                <td>
-                    {{ servico[1] }}
-                </td>
-
-                <td>
-                    {{ servico[2] }}
-                </td>
-
-                <td>
-                    {{ servico[3].strftime('%d/%m/%Y') }}
-                </td>
-
-                <td>
-                    {{ "%.2f"|format(servico[4]) }}
-                </td>
-
-                <td>
-                    R$ {{ "%.2f"|format(servico[5]) }}
-                </td>
-
-                <td>
-                    R$ {{ "%.2f"|format(servico[6]) }}
-                </td>
-
-                <td>
-                    {{ servico[7] }}
-                </td>
-
+                <td>{{ servico[0] }}</td>
+                <td>{{ servico[1] }}</td>
+                <td>{{ servico[2] }}</td>
+                <td>{{ servico[3].strftime('%d/%m/%Y') }}</td>
+                <td>{{ "%.2f"|format(servico[4]) }}</td>
+                <td>R$ {{ "%.2f"|format(servico[5]) }}</td>
+                <td>R$ {{ "%.2f"|format(servico[6]) }}</td>
+                <td>{{ servico[7] }}</td>
             </tr>
 
             {% endfor %}
@@ -164,7 +156,7 @@
     {% else %}
 
     <p>
-        Nenhum serviço encontrado.
+        Nenhum serviço encontrado para os filtros selecionados.
     </p>
 
     {% endif %}

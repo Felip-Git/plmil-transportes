@@ -3,7 +3,6 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 
@@ -21,7 +20,6 @@ def conectar_banco():
 
 def buscar_empresas():
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     cursor.execute("""
@@ -42,7 +40,6 @@ def buscar_empresas():
 
 def inserir_empresa(nome):
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     cursor.execute(
@@ -61,7 +58,6 @@ def inserir_empresa(nome):
 
 def buscar_motoristas():
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     cursor.execute("""
@@ -83,7 +79,6 @@ def buscar_motoristas():
 
 def inserir_motorista(nome, valor_km):
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     cursor.execute(
@@ -108,7 +103,6 @@ def inserir_motorista(nome, valor_km):
 
 def buscar_funcionarios():
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     cursor.execute("""
@@ -132,7 +126,6 @@ def buscar_funcionarios():
 
 def buscar_funcionarios_por_empresa(empresa_id):
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     cursor.execute(
@@ -157,7 +150,6 @@ def buscar_funcionarios_por_empresa(empresa_id):
 
 def inserir_funcionario(nome, empresa_id):
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     cursor.execute(
@@ -180,12 +172,15 @@ def inserir_funcionario(nome, empresa_id):
     conexao.close()
 
 
-def buscar_servicos():
+def buscar_servicos_filtrados(
+    empresa_id=None,
+    mes=None,
+    ano=None
+):
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
-    cursor.execute("""
+    consulta = """
         SELECT
             s.id,
             e.nome,
@@ -217,7 +212,27 @@ def buscar_servicos():
 
         LEFT JOIN funcionario f
             ON sf.funcionario_id = f.id
+    """
 
+    condicoes = []
+    parametros = []
+
+    if empresa_id is not None:
+        condicoes.append("s.empresa_id = %s")
+        parametros.append(empresa_id)
+
+    if mes is not None:
+        condicoes.append("EXTRACT(MONTH FROM s.data) = %s")
+        parametros.append(mes)
+
+    if ano is not None:
+        condicoes.append("EXTRACT(YEAR FROM s.data) = %s")
+        parametros.append(ano)
+
+    if condicoes:
+        consulta += " WHERE " + " AND ".join(condicoes)
+
+    consulta += """
         GROUP BY
             s.id,
             e.nome,
@@ -226,69 +241,12 @@ def buscar_servicos():
             s.km,
             s.valor_km_motorista
 
-        ORDER BY s.id;
-    """)
-
-    servicos = cursor.fetchall()
-
-    cursor.close()
-    conexao.close()
-
-    return servicos
-
-
-def buscar_servicos_por_empresa(empresa_id):
-    conexao = conectar_banco()
-
-    cursor = conexao.cursor()
+        ORDER BY s.id ASC;
+    """
 
     cursor.execute(
-        """
-        SELECT
-            s.id,
-            e.nome,
-            m.nome,
-            s.data,
-            s.km,
-            s.valor_km_motorista,
-            s.km * s.valor_km_motorista AS valor_motorista,
-
-            COALESCE(
-                STRING_AGG(
-                    f.nome,
-                    ', '
-                    ORDER BY f.nome
-                ),
-                'Nenhum funcionário'
-            ) AS funcionarios
-
-        FROM servico s
-
-        JOIN empresa e
-            ON s.empresa_id = e.id
-
-        JOIN motorista m
-            ON s.motorista_id = m.id
-
-        LEFT JOIN servico_funcionario sf
-            ON s.id = sf.servico_id
-
-        LEFT JOIN funcionario f
-            ON sf.funcionario_id = f.id
-
-        WHERE s.empresa_id = %s
-
-        GROUP BY
-            s.id,
-            e.nome,
-            m.nome,
-            s.data,
-            s.km,
-            s.valor_km_motorista
-
-        ORDER BY s.id;
-        """,
-        (empresa_id,)
+        consulta,
+        parametros
     )
 
     servicos = cursor.fetchall()
@@ -299,6 +257,28 @@ def buscar_servicos_por_empresa(empresa_id):
     return servicos
 
 
+def buscar_anos_servicos():
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT DISTINCT
+            EXTRACT(YEAR FROM data)::INTEGER AS ano
+        FROM servico
+        ORDER BY ano DESC;
+    """)
+
+    anos = [
+        resultado[0]
+        for resultado in cursor.fetchall()
+    ]
+
+    cursor.close()
+    conexao.close()
+
+    return anos
+
+
 def inserir_servico(
     empresa_id,
     motorista_id,
@@ -307,7 +287,6 @@ def inserir_servico(
     funcionarios_ids
 ):
     conexao = conectar_banco()
-
     cursor = conexao.cursor()
 
     if not funcionarios_ids:
@@ -334,7 +313,9 @@ def inserir_servico(
         cursor.close()
         conexao.close()
 
-        raise ValueError("Motorista não encontrado.")
+        raise ValueError(
+            "Motorista não encontrado."
+        )
 
     valor_km_motorista = resultado[0]
 
@@ -394,7 +375,6 @@ def inserir_servico(
     servico_id = cursor.fetchone()[0]
 
     for funcionario_id in funcionarios_ids:
-
         cursor.execute(
             """
             INSERT INTO servico_funcionario (
