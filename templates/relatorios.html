@@ -82,6 +82,32 @@
             {{ "%02d"|format(mes_selecionado) }}/{{ ano_selecionado }}
         </p>
 
+        <form method="GET" action="{{ url_for('exportar_relatorio') }}">
+            <input
+                type="hidden"
+                name="empresa_id"
+                value="{{ empresa_selecionada }}"
+            >
+
+            <input
+                type="hidden"
+                name="mes"
+                value="{{ mes_selecionado }}"
+            >
+
+            <input
+                type="hidden"
+                name="ano"
+                value="{{ ano_selecionado }}"
+            >
+
+            <button type="submit">
+                Exportar para Excel
+            </button>
+        </form>
+
+        <br>
+
         <h3>Resumo</h3>
 
         <ul>
