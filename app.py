@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from flask import send_file
+
 from flask import (
     Flask,
     jsonify,
@@ -8,6 +10,8 @@ from flask import (
     redirect,
     url_for
 )
+
+from relatorio_excel import gerar_relatorio_excel
 
 from database import (
     conectar_banco,
@@ -30,7 +34,6 @@ from database import (
     buscar_servicos_filtrados,
     buscar_anos_servicos,
     buscar_resumo_relatorio,
-    buscar_resumo_motoristas_relatorio,
     buscar_servico_por_id,
     buscar_funcionarios_do_servico,
     inserir_servico,
@@ -421,7 +424,6 @@ def relatorios():
 
     servicos = []
     resumo = None
-    resumo_motoristas = []
     empresa_selecionada_nome = None
 
     if empresa_id and mes and ano:
@@ -438,12 +440,6 @@ def relatorios():
             ano
         )
 
-        resumo_motoristas = buscar_resumo_motoristas_relatorio(
-            empresa_id,
-            mes,
-            ano
-        )
-
         for empresa in lista_empresas:
             if empresa[0] == empresa_id:
                 empresa_selecionada_nome = empresa[1]
@@ -453,7 +449,6 @@ def relatorios():
         "relatorios.html",
         servicos=servicos,
         resumo=resumo,
-        resumo_motoristas=resumo_motoristas,
         empresas=lista_empresas,
         anos=anos,
         meses=meses,
@@ -461,6 +456,78 @@ def relatorios():
         mes_selecionado=mes,
         ano_selecionado=ano,
         empresa_selecionada_nome=empresa_selecionada_nome
+    )
+
+
+@app.route("/relatorios/exportar")
+def exportar_relatorio():
+
+    empresa_id = request.args.get("empresa_id") or None
+    mes = request.args.get("mes") or None
+    ano = request.args.get("ano") or None
+
+    if empresa_id and empresa_id.isdigit():
+        empresa_id = int(empresa_id)
+    else:
+        empresa_id = None
+
+    if mes and mes.isdigit() and 1 <= int(mes) <= 12:
+        mes = int(mes)
+    else:
+        mes = None
+
+    if ano and ano.isdigit():
+        ano = int(ano)
+    else:
+        ano = None
+
+    if not empresa_id or not mes or not ano:
+        return "Selecione empresa, mês e ano para exportar o relatório.", 400
+
+    lista_empresas = buscar_empresas()
+    empresa_selecionada_nome = None
+
+    for empresa in lista_empresas:
+        if empresa[0] == empresa_id:
+            empresa_selecionada_nome = empresa[1]
+            break
+
+    if empresa_selecionada_nome is None:
+        return "Empresa não encontrada.", 404
+
+    servicos = buscar_servicos_filtrados(
+        empresa_id=empresa_id,
+        mes=mes,
+        ano=ano
+    )
+
+    resumo = buscar_resumo_relatorio(
+        empresa_id,
+        mes,
+        ano
+    )
+
+    arquivo = gerar_relatorio_excel(
+        empresa_nome=empresa_selecionada_nome,
+        mes=mes,
+        ano=ano,
+        resumo=resumo,
+        servicos=servicos
+    )
+
+    nome_arquivo = (
+        f"relatorio_{empresa_selecionada_nome}"
+        f"_{mes:02d}_{ano}.xlsx"
+    )
+
+    return send_file(
+        arquivo,
+        as_attachment=True,
+        download_name=nome_arquivo,
+        mimetype=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        )
     )
 
 
@@ -560,6 +627,7 @@ def cadastrar_servico():
         data = request.form["data"]
 
         km = request.form["km"]
+
         funcionarios_ids = request.form.getlist(
             "funcionarios_ids"
         )
