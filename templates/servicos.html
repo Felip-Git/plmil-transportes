@@ -1,241 +1,647 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Serviços</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background-color: #f5f7fa;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        /* =====================================================
+           CABEÇALHO
+        ===================================================== */
+
+        .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .botao-cadastrar {
+            display: inline-block;
+            padding: 10px 18px;
+            background-color: #2f75b5;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .botao-cadastrar:hover {
+            background-color: #245b8f;
+        }
+
+        /* =====================================================
+           ABAS DAS EMPRESAS
+        ===================================================== */
+
+        .abas-empresas {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .aba-empresa {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #e9edf2;
+            color: #333;
+            text-decoration: none;
+            border-radius: 6px 6px 0 0;
+            font-weight: bold;
+        }
+
+        .aba-empresa:hover {
+            background-color: #dce3ea;
+        }
+
+        .aba-empresa.ativa {
+            background-color: #2f75b5;
+            color: white;
+        }
+
+        /* =====================================================
+           EMPRESA SELECIONADA
+        ===================================================== */
+
+        .empresa-titulo {
+            margin-bottom: 20px;
+        }
+
+        .empresa-titulo h2 {
+            margin: 0;
+        }
+
+        /* =====================================================
+           FILTROS
+        ===================================================== */
+
+        .filtros {
+            display: flex;
+            align-items: end;
+            gap: 15px;
+            padding: 18px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .campo-filtro {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .campo-filtro label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .campo-filtro select {
+            min-width: 180px;
+            padding: 9px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        .botao-filtrar {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2f75b5;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .botao-filtrar:hover {
+            background-color: #245b8f;
+        }
+
+        .botao-limpar {
+            display: inline-block;
+            padding: 9px 18px;
+            border-radius: 5px;
+            background-color: #e5e5e5;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .botao-limpar:hover {
+            background-color: #d5d5d5;
+        }
+
+        /* =====================================================
+           TABELA
+        ===================================================== */
+
+        .tabela-container {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #17365d;
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        td.funcionarios {
+            text-align: left;
+            min-width: 350px;
+        }
+
+        tbody tr:hover {
+            background-color: #f3f6f9;
+        }
+
+        /* =====================================================
+           AÇÕES
+        ===================================================== */
+
+        .acoes {
+            white-space: nowrap;
+        }
+
+        .botao-editar,
+        .botao-excluir {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .botao-editar {
+            background-color: #e8f1fa;
+            color: #245b8f;
+        }
+
+        .botao-editar:hover {
+            background-color: #d7e7f5;
+        }
+
+        .botao-excluir {
+            background-color: #f8dede;
+            color: #a32929;
+        }
+
+        .botao-excluir:hover {
+            background-color: #f2caca;
+        }
+
+        .form-excluir {
+            display: inline;
+        }
+
+        /* =====================================================
+           NENHUM RESULTADO
+        ===================================================== */
+
+        .sem-servicos {
+            padding: 40px;
+            text-align: center;
+            color: #666;
+        }
+
+        /* =====================================================
+           RESPONSIVIDADE
+        ===================================================== */
+
+        @media (max-width: 800px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .topo {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .filtros {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .campo-filtro select {
+                width: 100%;
+            }
+
+            .botao-filtrar,
+            .botao-limpar {
+                width: 100%;
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-    <h1>Serviços</h1>
+<div class="container">
 
-    <a href="/servicos/cadastrar">
-        Cadastrar novo serviço
-    </a>
+    <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
 
-    <br><br>
+    <div class="topo">
 
-    <form method="GET" action="/servicos">
+        <h1>Serviços</h1>
 
-        <label for="empresa_id">
-            Empresa:
-        </label>
-
-        <select
-            id="empresa_id"
-            name="empresa_id"
+        <a
+            href="{{ url_for('cadastrar_servico') }}"
+            class="botao-cadastrar"
         >
-
-            <option value="">
-                Todas as empresas
-            </option>
-
-            {% for empresa in empresas %}
-
-            <option
-                value="{{ empresa[0] }}"
-                {% if empresa_selecionada == empresa[0] %}
-                    selected
-                {% endif %}
-            >
-                {{ empresa[1] }}
-            </option>
-
-            {% endfor %}
-
-        </select>
-
-        &nbsp;
-
-        <label for="mes">
-            Mês:
-        </label>
-
-        <select
-            id="mes"
-            name="mes"
-        >
-
-            <option value="">
-                Todos os meses
-            </option>
-
-            {% for numero, nome in meses %}
-
-            <option
-                value="{{ numero }}"
-                {% if mes_selecionado == numero %}
-                    selected
-                {% endif %}
-            >
-                {{ nome }}
-            </option>
-
-            {% endfor %}
-
-        </select>
-
-        &nbsp;
-
-        <label for="ano">
-            Ano:
-        </label>
-
-        <select
-            id="ano"
-            name="ano"
-        >
-
-            <option value="">
-                Todos os anos
-            </option>
-
-            {% for ano in anos %}
-
-            <option
-                value="{{ ano }}"
-                {% if ano_selecionado == ano %}
-                    selected
-                {% endif %}
-            >
-                {{ ano }}
-            </option>
-
-            {% endfor %}
-
-        </select>
-
-        &nbsp;
-
-        <button type="submit">
-            Filtrar
-        </button>
-
-        &nbsp;
-
-        <a href="/servicos">
-            Limpar filtros
+            + Cadastrar Serviço
         </a>
 
-    </form>
+    </div>
 
-    <br><br>
 
-    {% if servicos %}
+    <!-- =====================================================
+         ABAS DAS EMPRESAS
+    ====================================================== -->
 
-    <table border="1" cellpadding="8">
+    <div class="abas-empresas">
 
-        <thead>
+        {% for empresa in empresas %}
 
-            <tr>
-                <th>ID</th>
-                <th>Empresa</th>
-                <th>Motorista</th>
-                <th>Data</th>
-                <th>KM</th>
-                <th>Valor KM Motorista</th>
-                <th>Valor Motorista</th>
-                <th>Funcionários</th>
-                <th>Ações</th>
-            </tr>
+            <a
+                href="{{ url_for(
+                    'servicos',
+                    empresa_id=empresa[0],
+                    mes=mes_selecionado,
+                    ano=ano_selecionado
+                ) }}"
+                class="
+                    aba-empresa
+                    {% if empresa_selecionada == empresa[0] %}
+                        ativa
+                    {% endif %}
+                "
+            >
+                {{ empresa[1] }}
+            </a>
 
-        </thead>
+        {% endfor %}
 
-        <tbody>
+    </div>
 
-            {% for servico in servicos %}
 
-            <tr>
+    <!-- =====================================================
+         EMPRESA SELECIONADA
+    ====================================================== -->
 
-                <td>
-                    {{ servico[0] }}
-                </td>
+    {% if empresa_selecionada %}
 
-                <td>
-                    {{ servico[1] }}
-                </td>
+        {% for empresa in empresas %}
 
-                <td>
-                    {{ servico[2] }}
-                </td>
+            {% if empresa[0] == empresa_selecionada %}
 
-                <td>
-                    {{ servico[3].strftime('%d/%m/%Y') }}
-                </td>
+                <div class="empresa-titulo">
 
-                <td>
-                    {{ "%.2f"|format(servico[4]) }}
-                </td>
+                    <h2>
+                        {{ empresa[1] }}
+                    </h2>
 
-                <td>
-                    R$ {{ "%.2f"|format(servico[5]) }}
-                </td>
+                </div>
 
-                <td>
-                    R$ {{ "%.2f"|format(servico[6]) }}
-                </td>
+            {% endif %}
 
-                <td>
-                    {{ servico[7] }}
-                </td>
-
-                <td>
-
-                    <a href="{{ url_for(
-                        'editar_servico',
-                        servico_id=servico[0]
-                    ) }}">
-                        Editar
-                    </a>
-
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'excluir_servico_rota',
-                            servico_id=servico[0]
-                        ) }}"
-                        style="display: inline;"
-                        onsubmit="return confirmarExclusao();"
-                    >
-
-                        <button type="submit">
-                            Excluir
-                        </button>
-
-                    </form>
-
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
+        {% endfor %}
 
     {% else %}
 
-    <p>
-        Nenhum serviço encontrado para os filtros selecionados.
-    </p>
+        <div class="empresa-titulo">
+
+            <h2>
+                Selecione uma empresa
+            </h2>
+
+        </div>
 
     {% endif %}
 
 
-    <script>
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
 
-        function confirmarExclusao() {
+    {% if empresa_selecionada %}
 
-            return confirm(
-                "Tem certeza que deseja excluir este serviço?"
-            );
+        <form
+            method="GET"
+            action="{{ url_for('servicos') }}"
+            class="filtros"
+        >
 
-        }
+            <input
+                type="hidden"
+                name="empresa_id"
+                value="{{ empresa_selecionada }}"
+            >
 
-    </script>
+
+            <div class="campo-filtro">
+
+                <label for="mes">
+                    Mês
+                </label>
+
+                <select
+                    id="mes"
+                    name="mes"
+                >
+
+                    <option value="">
+                        Todos os meses
+                    </option>
+
+                    {% for mes in meses %}
+
+                        <option
+                            value="{{ mes[0] }}"
+                            {% if mes_selecionado == mes[0] %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ mes[1] }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="campo-filtro">
+
+                <label for="ano">
+                    Ano
+                </label>
+
+                <select
+                    id="ano"
+                    name="ano"
+                >
+
+                    <option value="">
+                        Todos os anos
+                    </option>
+
+                    {% for ano in anos %}
+
+                        <option
+                            value="{{ ano }}"
+                            {% if ano_selecionado == ano %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ ano }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="botao-filtrar"
+            >
+                Filtrar
+            </button>
+
+
+            <a
+                href="{{ url_for(
+                    'servicos',
+                    empresa_id=empresa_selecionada
+                ) }}"
+                class="botao-limpar"
+            >
+                Limpar filtros
+            </a>
+
+        </form>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         TABELA
+    ====================================================== -->
+
+    {% if empresa_selecionada %}
+
+        {% if servicos %}
+
+            <div class="tabela-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Data
+                            </th>
+
+                            <th>
+                                Funcionários transportados
+                            </th>
+
+                            <th>
+                                KM
+                            </th>
+
+                            <th>
+                                Ações
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for servico in servicos %}
+
+                            <tr>
+
+                                <td>
+                                    {{ servico[0] }}
+                                </td>
+
+
+                                <td>
+                                    {{ servico[3].strftime('%d/%m/%Y') }}
+                                </td>
+
+
+                                <td class="funcionarios">
+                                    {{ servico[7] }}
+                                </td>
+
+
+                                <td>
+                                    {{ "%.2f"|format(servico[4]|float) }}
+                                </td>
+
+
+                                <td class="acoes">
+
+                                    <a
+                                        href="{{ url_for(
+                                            'editar_servico',
+                                            servico_id=servico[0]
+                                        ) }}"
+                                        class="botao-editar"
+                                    >
+                                        Editar
+                                    </a>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'excluir_servico_rota',
+                                            servico_id=servico[0]
+                                        ) }}"
+                                        class="form-excluir"
+                                        onsubmit="
+                                            return confirm(
+                                                'Tem certeza que deseja excluir este serviço?'
+                                            );
+                                        "
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="botao-excluir"
+                                        >
+                                            Excluir
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="tabela-container">
+
+                <div class="sem-servicos">
+
+                    Nenhum serviço encontrado
+                    para os filtros selecionados.
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    {% else %}
+
+        <div class="tabela-container">
+
+            <div class="sem-servicos">
+
+                Selecione uma empresa acima
+                para visualizar os serviços.
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
 
 </body>
 
 </html>
+
