@@ -1,72 +1,133 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Funcionário</title>
-</head>
 
-<body>
+{% block title %}
+    Editar funcionário | PL Mil Transportes
+{% endblock %}
 
-    <h1>Editar Funcionário</h1>
 
-    <form method="POST">
+{% block topbar_title %}
+    Editar funcionário
+{% endblock %}
 
-        <label for="nome">
-            Nome do funcionário:
-        </label>
 
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            value="{{ funcionario[1] }}"
-            required
+{% block content %}
+
+    <div class="page-header">
+
+        <div class="page-header-text">
+
+            <h1 class="page-title">
+                Editar funcionário
+            </h1>
+
+            <p class="page-description">
+                Atualize os dados e a empresa vinculada ao funcionário.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                Dados do funcionário
+            </div>
+
+            <div class="card-description">
+                Altere as informações necessárias e salve as modificações.
+            </div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            class="formulario"
         >
 
-        <br><br>
+            <div class="form-grid">
 
-        <label for="empresa_id">
-            Empresa:
-        </label>
+                <div class="campo">
 
-        <select
-            id="empresa_id"
-            name="empresa_id"
-            required
-        >
+                    <label for="nome">
+                        Nome do funcionário
+                    </label>
 
-            <option value="">
-                Selecione uma empresa
-            </option>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value="{{ funcionario[1] }}"
+                        placeholder="Digite o nome do funcionário"
+                        required
+                        autofocus
+                    >
 
-            {% for empresa in empresas %}
+                </div>
 
-            <option
-                value="{{ empresa[0] }}"
-                {% if empresa[0] == funcionario[2] %}
-                    selected
-                {% endif %}
-            >
-                {{ empresa[1] }}
-            </option>
 
-            {% endfor %}
+                <div class="campo">
 
-        </select>
+                    <label for="empresa_id">
+                        Empresa
+                    </label>
 
-        <br><br>
+                    <select
+                        id="empresa_id"
+                        name="empresa_id"
+                        required
+                    >
 
-        <button type="submit">
-            Salvar alterações
-        </button>
+                        <option value="">
+                            Selecione uma empresa
+                        </option>
 
-        <a href="{{ url_for('funcionarios') }}">
-            Cancelar
-        </a>
+                        {% for empresa in empresas %}
 
-    </form>
+                            <option
+                                value="{{ empresa[0] }}"
+                                {% if empresa[0] == funcionario[2] %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ empresa[1] }}
+                            </option>
 
-</body>
+                        {% endfor %}
 
-</html>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-acoes">
+
+                <a
+                    href="{{ url_for('funcionarios') }}"
+                    class="botao-secundario"
+                >
+                    Cancelar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="botao-principal"
+                >
+                    Salvar alterações
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}

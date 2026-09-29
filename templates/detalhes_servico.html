@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Serviço #{{ servico[0] }} | PL Mil Transportes
+{% endblock %}
+
+{% block topbar_title %}
+    Detalhes do serviço
+{% endblock %}
+
+{% block topbar_actions %}
+
+    <a
+        href="{{ url_for('editar_servico', servico_id=servico[0]) }}"
+        class="botao-principal"
+    >
+        Editar serviço
+    </a>
+
+    <a
+        href="{{ url_for('servicos') }}"
+        class="botao-secundario"
+    >
+        Voltar para serviços
+    </a>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Serviço #{{ servico[0] }}
+        </h1>
+
+        <p class="page-description">
+            Consulte todas as informações registradas para este serviço.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Informações do serviço
+            </h2>
+
+            <p class="card-description">
+                Dados gerais do transporte realizado.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="detalhes-grid">
+
+        <div class="detalhe-item">
+
+            <span class="detalhe-label">
+                ID do serviço
+            </span>
+
+            <span class="detalhe-valor">
+                #{{ servico[0] }}
+            </span>
+
+        </div>
+
+
+        <div class="detalhe-item">
+
+            <span class="detalhe-label">
+                Empresa
+            </span>
+
+            <span class="detalhe-valor">
+                {{ empresa_nome }}
+            </span>
+
+        </div>
+
+
+        <div class="detalhe-item">
+
+            <span class="detalhe-label">
+                Motorista
+            </span>
+
+            <span class="detalhe-valor">
+                {{ motorista_nome }}
+            </span>
+
+        </div>
+
+
+        <div class="detalhe-item">
+
+            <span class="detalhe-label">
+                Data
+            </span>
+
+            <span class="detalhe-valor">
+                {{ servico[3].strftime('%d/%m/%Y') }}
+            </span>
+
+        </div>
+
+
+        <div class="detalhe-item">
+
+            <span class="detalhe-label">
+                KM realizado
+            </span>
+
+            <span class="detalhe-valor">
+                {{ "%.2f"|format(servico[4]|float) }} km
+            </span>
+
+        </div>
+
+
+        <div class="detalhe-item">
+
+            <span class="detalhe-label">
+                Valor por KM
+            </span>
+
+            <span class="detalhe-valor">
+                R$ {{ "%.2f"|format(servico[5]|float) }}
+            </span>
+
+        </div>
+
+
+        <div class="detalhe-item">
+
+            <span class="detalhe-label">
+                Funcionários transportados
+            </span>
+
+            <span class="detalhe-valor">
+
+                {% if funcionarios %}
+
+                    {% for funcionario in funcionarios %}
+
+                        {{ funcionario[1] }}{% if not loop.last %}, {% endif %}
+
+                    {% endfor %}
+
+                {% else %}
+
+                    Nenhum funcionário
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

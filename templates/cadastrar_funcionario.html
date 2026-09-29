@@ -1,68 +1,127 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-
-    <title>Cadastrar Funcionário</title>
-</head>
-
-<body>
-
-    <h1>Cadastrar Funcionário</h1>
+{% extends "base.html" %}
 
 
-    <form method="POST">
+{% block title %}
+    Novo funcionário | PL Mil Transportes
+{% endblock %}
 
-        <label for="nome">
-            Nome do funcionário:
-        </label>
 
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            required
+{% block topbar_title %}
+    Novo funcionário
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="page-header">
+
+        <div class="page-header-text">
+
+            <h1 class="page-title">
+                Novo funcionário
+            </h1>
+
+            <p class="page-description">
+                Cadastre um funcionário e vincule-o à empresa correspondente.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                Dados do funcionário
+            </div>
+
+            <div class="card-description">
+                Informe o nome do funcionário e selecione a empresa à qual ele pertence.
+            </div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            class="formulario"
         >
 
+            <div class="form-grid">
 
-        <br><br>
+                <div class="campo">
 
+                    <label for="nome">
+                        Nome do funcionário
+                    </label>
 
-        <label for="empresa_id">
-            Empresa:
-        </label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Digite o nome do funcionário"
+                        required
+                        autofocus
+                    >
 
-        <select
-            id="empresa_id"
-            name="empresa_id"
-            required
-        >
-
-            <option value="">
-                Selecione uma empresa
-            </option>
-
-            {% for empresa in empresas %}
-
-            <option value="{{ empresa[0] }}">
-                {{ empresa[1] }}
-            </option>
-
-            {% endfor %}
-
-        </select>
+                </div>
 
 
-        <br><br>
+                <div class="campo">
+
+                    <label for="empresa_id">
+                        Empresa
+                    </label>
+
+                    <select
+                        id="empresa_id"
+                        name="empresa_id"
+                        required
+                    >
+
+                        <option value="">
+                            Selecione uma empresa
+                        </option>
+
+                        {% for empresa in empresas %}
+
+                            <option value="{{ empresa[0] }}">
+                                {{ empresa[1] }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
 
 
-        <button type="submit">
-            Cadastrar funcionário
-        </button>
+            <div class="form-acoes">
 
-    </form>
+                <a
+                    href="{{ url_for('funcionarios') }}"
+                    class="botao-secundario"
+                >
+                    Cancelar
+                </a>
 
-</body>
 
-</html>
+                <button
+                    type="submit"
+                    class="botao-principal"
+                >
+                    Salvar funcionário
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}

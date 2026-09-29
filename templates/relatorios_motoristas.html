@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Relatório Empresas | PL Mil Transportes
+
+    Relatório Motoristas | PL Mil Transportes
+
 {% endblock %}
 
 {% block topbar_title %}
-    Relatório Empresas
+
+    Relatório Motoristas
+
 {% endblock %}
 
 {% block content %}
@@ -15,11 +19,15 @@
     <div class="page-header-text">
 
         <h1 class="page-title">
-            Relatório Empresas
+
+            Relatório Motoristas
+
         </h1>
 
         <p class="page-description">
-            Consulte os serviços realizados por empresa e período.
+
+            Consulte os serviços realizados, quilômetros e valores dos motoristas.
+
         </p>
 
     </div>
@@ -34,11 +42,15 @@
         <div>
 
             <h2 class="card-title">
+
                 Empresas
+
             </h2>
 
             <p class="card-description">
-                Selecione uma empresa para consultar seus serviços.
+
+                Selecione uma empresa para consultar seus motoristas.
+
             </p>
 
         </div>
@@ -48,24 +60,11 @@
 
     <div class="empresas-abas">
 
-        <a
-            href="{{ url_for('relatorios') }}"
-            class="
-                empresa-aba
-                {% if not empresa_selecionada %}
-                    ativa
-                {% endif %}
-            "
-        >
-            Todas
-        </a>
-
-
         {% for empresa in empresas %}
 
             <a
                 href="{{ url_for(
-                    'relatorios',
+                    'relatorios_motoristas',
                     empresa_id=empresa[0]
                 ) }}"
                 class="
@@ -75,7 +74,9 @@
                     {% endif %}
                 "
             >
+
                 {{ empresa[1] }}
+
             </a>
 
         {% endfor %}
@@ -95,11 +96,15 @@
         <div>
 
             <h2 class="card-title">
+
                 Filtros
+
             </h2>
 
             <p class="card-description">
+
                 Selecione o período para gerar o relatório.
+
             </p>
 
         </div>
@@ -109,7 +114,7 @@
 
     <form
         method="GET"
-        action="{{ url_for('relatorios') }}"
+        action="{{ url_for('relatorios_motoristas') }}"
         class="filtros"
     >
 
@@ -123,7 +128,9 @@
         <div class="filtro">
 
             <label for="mes">
+
                 Mês
+
             </label>
 
             <select
@@ -133,7 +140,9 @@
             >
 
                 <option value="">
+
                     Selecione o mês
+
                 </option>
 
                 {% for mes in meses %}
@@ -144,7 +153,9 @@
                             selected
                         {% endif %}
                     >
+
                         {{ mes[1] }}
+
                     </option>
 
                 {% endfor %}
@@ -157,7 +168,9 @@
         <div class="filtro">
 
             <label for="ano">
+
                 Ano
+
             </label>
 
             <select
@@ -167,7 +180,9 @@
             >
 
                 <option value="">
+
                     Selecione o ano
+
                 </option>
 
                 {% for ano in anos %}
@@ -178,7 +193,9 @@
                             selected
                         {% endif %}
                     >
+
                         {{ ano }}
+
                     </option>
 
                 {% endfor %}
@@ -194,7 +211,9 @@
                 type="submit"
                 class="botao-principal"
             >
+
                 Gerar relatório
+
             </button>
 
         </div>
@@ -207,18 +226,22 @@
 <div style="height: 20px;"></div>
 
 
-{% if not resumo %}
+{% if not resumo_motoristas %}
 
     <div class="card">
 
         <div class="estado-vazio">
 
             <strong>
+
                 Gere um relatório
+
             </strong>
 
             <span>
-                Selecione uma empresa, um mês e um ano para visualizar os dados.
+
+                Selecione uma empresa, um mês e um ano para visualizar os dados dos motoristas.
+
             </span>
 
         </div>
@@ -228,7 +251,7 @@
 {% endif %}
 
 
-{% if resumo %}
+{% if resumo_motoristas %}
 
     <div class="card">
 
@@ -237,14 +260,19 @@
             <div>
 
                 <h2 class="card-title">
+
                     {{ empresa_selecionada_nome }}
+
                 </h2>
 
                 <p class="card-description">
 
                     Relatório de
+
                     {{ meses[mes_selecionado|int - 1][1] }}
+
                     de
+
                     {{ ano_selecionado }}
 
                 </p>
@@ -256,14 +284,16 @@
 
                 <a
                     href="{{ url_for(
-                        'exportar_relatorio',
+                        'exportar_relatorio_motoristas',
                         empresa_id=empresa_selecionada,
                         mes=mes_selecionado,
                         ano=ano_selecionado
                     ) }}"
                     class="botao-principal"
                 >
+
                     Exportar Excel
+
                 </a>
 
             </div>
@@ -276,11 +306,15 @@
             <div class="relatorio-resumo-item">
 
                 <span>
+
                     Serviços realizados
+
                 </span>
 
                 <strong>
-                    {{ resumo[0] }}
+
+                    {{ resumo_quantidade_servicos }}
+
                 </strong>
 
             </div>
@@ -289,11 +323,17 @@
             <div class="relatorio-resumo-item">
 
                 <span>
+
                     KM realizados
+
                 </span>
 
                 <strong>
-                    {{ "%.2f"|format(resumo[1]|float) }} km
+
+                    {{ "%.2f"|format(
+                        resumo_km_total|float
+                    ) }} km
+
                 </strong>
 
             </div>
@@ -302,11 +342,15 @@
             <div class="relatorio-resumo-item">
 
                 <span>
-                    Funcionários transportados
+
+                    Motoristas
+
                 </span>
 
                 <strong>
-                    {{ resumo[2] }}
+
+                    {{ resumo_motoristas|length }}
+
                 </strong>
 
             </div>
@@ -315,11 +359,17 @@
             <div class="relatorio-resumo-item">
 
                 <span>
+
                     Total motoristas
+
                 </span>
 
                 <strong>
-                    R$ {{ "%.2f"|format(resumo[3]|float) }}
+
+                    R$ {{ "%.2f"|format(
+                        resumo_valor_total|float
+                    ) }}
+
                 </strong>
 
             </div>
@@ -339,11 +389,15 @@
             <div>
 
                 <h2 class="card-title">
+
                     Serviços realizados
+
                 </h2>
 
                 <p class="card-description">
-                    Serviços registrados no período selecionado.
+
+                    Resumo dos serviços realizados por cada motorista no período selecionado.
+
                 </p>
 
             </div>
@@ -351,7 +405,7 @@
         </div>
 
 
-        {% if servicos %}
+        {% if resumo_motoristas %}
 
             <div class="tabela-container">
 
@@ -361,13 +415,35 @@
 
                         <tr>
 
-                            <th>ID</th>
-                            <th>Data</th>
-                            <th>Empresa</th>
-                            <th>Motorista</th>
-                            <th>Funcionários</th>
-                            <th>KM</th>
-                            <th>Valor motorista</th>
+                            <th>
+
+                                Motorista
+
+                            </th>
+
+                            <th>
+
+                                Serviços
+
+                            </th>
+
+                            <th>
+
+                                KM
+
+                            </th>
+
+                            <th>
+
+                                Valor por KM
+
+                            </th>
+
+                            <th>
+
+                                Total a receber
+
+                            </th>
 
                         </tr>
 
@@ -376,36 +452,58 @@
 
                     <tbody>
 
-                        {% for servico in servicos %}
+                        {% for motorista in resumo_motoristas %}
 
                             <tr>
 
                                 <td>
-                                    #{{ servico[0] }}
+
+                                    {{ motorista[0] }}
+
                                 </td>
 
-                                <td>
-                                    {{ servico[3].strftime('%d/%m/%Y') }}
-                                </td>
 
                                 <td>
-                                    {{ servico[1] }}
+
+                                    {{ motorista[1] }}
+
                                 </td>
 
-                                <td>
-                                    {{ servico[2] }}
-                                </td>
 
                                 <td>
-                                    {{ servico[7] }}
+
+                                    {{ "%.2f"|format(
+                                        motorista[2]|float
+                                    ) }} km
+
                                 </td>
 
-                                <td>
-                                    {{ "%.2f"|format(servico[4]|float) }} km
-                                </td>
 
                                 <td>
-                                    R$ {{ "%.2f"|format(servico[6]|float) }}
+
+                                    R$
+
+                                    {{ "%.2f"|format(
+                                        (
+                                            motorista[3] / motorista[2]
+                                        ) if motorista[2] else 0
+                                    ) }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <strong>
+
+                                        R$
+
+                                        {{ "%.2f"|format(
+                                            motorista[3]|float
+                                        ) }}
+
+                                    </strong>
+
                                 </td>
 
                             </tr>
@@ -423,11 +521,15 @@
             <div class="estado-vazio">
 
                 <strong>
-                    Nenhum serviço encontrado
+
+                    Nenhum motorista encontrado
+
                 </strong>
 
                 <span>
+
                     Não existem serviços registrados para o período selecionado.
+
                 </span>
 
             </div>

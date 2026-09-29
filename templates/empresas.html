@@ -1,94 +1,180 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Empresas</title>
-</head>
 
-<body>
+{% block title %}
+    Empresas | PL Mil Transportes
+{% endblock %}
 
-    <h1>Empresas</h1>
 
-    <a href="{{ url_for('cadastrar_empresa') }}">
-        Cadastrar nova empresa
+{% block topbar_title %}
+    Empresas
+{% endblock %}
+
+
+{% block topbar_actions %}
+
+    <a
+        href="{{ url_for('cadastrar_empresa') }}"
+        class="botao-principal"
+    >
+        + Nova empresa
     </a>
 
-    <br><br>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div class="page-header-text">
+
+        <h1 class="page-title">
+            Empresas
+        </h1>
+
+        <p class="page-description">
+            Gerencie as empresas atendidas pela PL Mil Transportes.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Empresas cadastradas
+            </h2>
+
+            <p class="card-description">
+                Consulte, edite ou exclua empresas do sistema.
+            </p>
+
+        </div>
+
+    </div>
+
 
     {% if empresas %}
 
-    <table border="1" cellpadding="8">
+        <div class="tabela-container">
 
-        <thead>
+            <table>
 
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Ações</th>
-            </tr>
+                <thead>
 
-        </thead>
+                    <tr>
 
-        <tbody>
+                        <th class="centralizado">
+                            ID
+                        </th>
 
-            {% for empresa in empresas %}
+                        <th>
+                            Empresa
+                        </th>
 
-            <tr>
+                        <th class="centralizado">
+                            Ações
+                        </th>
 
-                <td>
-                    {{ empresa[0] }}
-                </td>
+                    </tr>
 
-                <td>
-                    {{ empresa[1] }}
-                </td>
+                </thead>
 
-                <td>
 
-                    <a href="{{ url_for(
-                        'editar_empresa',
-                        empresa_id=empresa[0]
-                    ) }}">
-                        Editar
-                    </a>
+                <tbody>
 
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'excluir_empresa_rota',
-                            empresa_id=empresa[0]
-                        ) }}"
-                        style="display: inline;"
-                        onsubmit="return confirm(
-                            'Tem certeza que deseja excluir esta empresa?'
-                        );"
-                    >
+                    {% for empresa in empresas %}
 
-                        <button type="submit">
-                            Excluir
-                        </button>
+                        <tr>
 
-                    </form>
+                            <td class="centralizado">
+                                {{ empresa[0] }}
+                            </td>
 
-                </td>
 
-            </tr>
+                            <td>
 
-            {% endfor %}
+                                <strong>
+                                    {{ empresa[1] }}
+                                </strong>
 
-        </tbody>
+                            </td>
 
-    </table>
+
+                            <td>
+
+                                <div class="acoes">
+
+                                    <a
+                                        href="{{ url_for(
+                                            'editar_empresa',
+                                            empresa_id=empresa[0]
+                                        ) }}"
+                                        class="botao-acao"
+                                        title="Editar empresa"
+                                    >
+                                        ✎
+                                    </a>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'excluir_empresa_rota',
+                                            empresa_id=empresa[0]
+                                        ) }}"
+                                        onsubmit="return confirm(
+                                            'Tem certeza que deseja excluir esta empresa?'
+                                        );"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="botao-acao excluir"
+                                            title="Excluir empresa"
+                                        >
+                                            🗑
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     {% else %}
 
-    <p>
-        Nenhuma empresa cadastrada.
-    </p>
+        <div class="estado-vazio">
+
+            <strong>
+                Nenhuma empresa cadastrada
+            </strong>
+
+            <span>
+                Cadastre a primeira empresa para começar a utilizar o sistema.
+            </span>
+
+        </div>
 
     {% endif %}
 
-</body>
+</div>
 
-</html>
+{% endblock %}

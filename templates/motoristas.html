@@ -1,99 +1,192 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Motoristas</title>
-</head>
 
-<body>
+{% block title %}
+    Motoristas | PL Mil Transportes
+{% endblock %}
 
-    <h1>Motoristas</h1>
 
-    <a href="{{ url_for('cadastrar_motorista') }}">
-        Cadastrar novo motorista
+{% block topbar_title %}
+    Motoristas
+{% endblock %}
+
+
+{% block topbar_actions %}
+
+    <a
+        href="{{ url_for('cadastrar_motorista') }}"
+        class="botao-principal"
+    >
+        + Novo motorista
     </a>
 
-    <br><br>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div class="page-header-text">
+
+        <h1 class="page-title">
+            Motoristas
+        </h1>
+
+        <p class="page-description">
+            Gerencie os motoristas e seus valores por quilômetro.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Motoristas cadastrados
+            </h2>
+
+            <p class="card-description">
+                Consulte, edite ou exclua motoristas do sistema.
+            </p>
+
+        </div>
+
+    </div>
+
 
     {% if motoristas %}
 
-    <table border="1" cellpadding="8">
+        <div class="tabela-container">
 
-        <thead>
+            <table>
 
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Valor por KM</th>
-                <th>Ações</th>
-            </tr>
+                <thead>
 
-        </thead>
+                    <tr>
 
-        <tbody>
+                        <th class="centralizado">
+                            ID
+                        </th>
 
-            {% for motorista in motoristas %}
+                        <th>
+                            Motorista
+                        </th>
 
-            <tr>
+                        <th class="direita">
+                            Valor por KM
+                        </th>
 
-                <td>
-                    {{ motorista[0] }}
-                </td>
+                        <th class="centralizado">
+                            Ações
+                        </th>
 
-                <td>
-                    {{ motorista[1] }}
-                </td>
+                    </tr>
 
-                <td>
-                    R$ {{ "%.2f"|format(motorista[2]) }}
-                </td>
+                </thead>
 
-                <td>
 
-                    <a href="{{ url_for(
-                        'editar_motorista',
-                        motorista_id=motorista[0]
-                    ) }}">
-                        Editar
-                    </a>
+                <tbody>
 
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'excluir_motorista_rota',
-                            motorista_id=motorista[0]
-                        ) }}"
-                        style="display: inline;"
-                        onsubmit="return confirm(
-                            'Tem certeza que deseja excluir este motorista?'
-                        );"
-                    >
+                    {% for motorista in motoristas %}
 
-                        <button type="submit">
-                            Excluir
-                        </button>
+                        <tr>
 
-                    </form>
+                            <td class="centralizado">
+                                {{ motorista[0] }}
+                            </td>
 
-                </td>
 
-            </tr>
+                            <td>
 
-            {% endfor %}
+                                <strong>
+                                    {{ motorista[1] }}
+                                </strong>
 
-        </tbody>
+                            </td>
 
-    </table>
+
+                            <td class="direita">
+
+                                R$
+                                {{ "%.2f"|format(motorista[2]) }}
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="acoes">
+
+                                    <a
+                                        href="{{ url_for(
+                                            'editar_motorista',
+                                            motorista_id=motorista[0]
+                                        ) }}"
+                                        class="botao-acao"
+                                        title="Editar motorista"
+                                    >
+                                        ✎
+                                    </a>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'excluir_motorista_rota',
+                                            motorista_id=motorista[0]
+                                        ) }}"
+                                        onsubmit="return confirm(
+                                            'Tem certeza que deseja excluir este motorista?'
+                                        );"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="botao-acao excluir"
+                                            title="Excluir motorista"
+                                        >
+                                            🗑
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     {% else %}
 
-    <p>
-        Nenhum motorista cadastrado.
-    </p>
+        <div class="estado-vazio">
+
+            <strong>
+                Nenhum motorista cadastrado
+            </strong>
+
+            <span>
+                Cadastre o primeiro motorista para começar a registrar serviços.
+            </span>
+
+        </div>
 
     {% endif %}
 
-</body>
+</div>
 
-</html>
+{% endblock %}

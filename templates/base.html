@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        PL Mil Transportes
+        {% endblock %}
+    </title>
+
+
+    <script>
+        (function () {
+
+            const temaSalvo =
+                localStorage.getItem("tema");
+
+            if (temaSalvo === "escuro") {
+
+                document.documentElement.classList.add(
+                    "modo-escuro"
+                );
+
+            }
+
+        })();
+    </script>
+
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+    <div class="app-layout">
+
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+
+            <!-- IDENTIDADE -->
+
+            <div class="sidebar-brand">
+
+                <div class="brand-logo">
+                    PL
+                </div>
+
+
+                <div class="brand-text">
+
+                    <span class="brand-name">
+                        PL Mil Transportes
+                    </span>
+
+                    <span class="brand-description">
+                        Gestão de transportes
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <nav class="sidebar-navigation">
+
+
+                <div class="navigation-label">
+                    MENU
+                </div>
+
+
+                <!-- DASHBOARD -->
+
+                <a href="{{ url_for('dashboard') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+                            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8" />
+
+                            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8" />
+
+                            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8" />
+
+                            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor"
+                                stroke-width="1.8" />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- SERVIÇOS -->
+
+                <a href="{{ url_for('servicos') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+                            <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8" />
+
+                            <path d="M8 8H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M8 12H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M8 16H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Serviços
+                    </span>
+
+                </a>
+
+
+                <!-- EMPRESAS -->
+
+                <a href="{{ url_for('empresas') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+                            <path d="M4 21V5.5C4 4.67 4.67 4 5.5 4H14.5C15.33 4 16 4.67 16 5.5V21" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M16 9.5H18.5C19.33 9.5 20 10.17 20 11V21" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" />
+
+                            <path d="M2.5 21H21.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M8 8H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M8 12H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M8 16H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Empresas
+                    </span>
+
+                </a>
+
+
+                <!-- MOTORISTAS -->
+
+                <a href="{{ url_for('motoristas') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+                            <path d="M5 17L6.5 10.5C6.72 9.61 7.52 9 8.44 9H15.56C16.48 9 17.28 9.61 17.5 10.5L19 17"
+                                stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" />
+
+                            <path d="M4 14H20V18.5C20 19.33 19.33 20 18.5 20H5.5C4.67 20 4 19.33 4 18.5V14Z"
+                                stroke="currentColor" stroke-width="1.8" />
+
+                            <path d="M7 17H7.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+
+                            <path d="M17 17H17.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+
+                            <path d="M8 9L9.5 6H14.5L16 9" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Motoristas
+                    </span>
+
+                </a>
+
+
+                <!-- FUNCIONÁRIOS -->
+
+                <a href="{{ url_for('funcionarios') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+                            <circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8" />
+
+                            <path d="M3.5 19C3.5 15.96 5.96 13.5 9 13.5C12.04 13.5 14.5 15.96 14.5 19"
+                                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M15 5.5C15.7 5.82 16.28 6.4 16.6 7.1" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" />
+
+                            <path d="M15.5 11.5C18.27 11.73 20.5 14.06 20.5 16.9" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Funcionários
+                    </span>
+
+                </a>
+
+
+                <!-- RELATÓRIO EMPRESAS -->
+
+                <a href="{{ url_for('relatorios') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+
+                            <path d="M4 19V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M4 19H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M7 15L11 11L14 13L19 7" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" />
+
+                            <path d="M16 7H19V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Relatório Empresas
+                    </span>
+
+                </a>
+
+
+                <!-- RELATÓRIO MOTORISTAS -->
+
+                <a href="{{ url_for('relatorios_motoristas') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.8" />
+
+                            <path d="M3 19C3 15.69 5.24 13 8 13C10.76 13 13 15.69 13 19" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" />
+
+                            <circle cx="17" cy="16" r="4" stroke="currentColor" stroke-width="1.8" />
+
+                            <path d="M17 14V18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+
+                            <path d="M15 16H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Relatório Motoristas
+                    </span>
+
+                </a>
+
+
+                <!-- CONFIGURAÇÕES -->
+
+                <a href="{{ url_for('configuracoes') }}" class="navigation-item">
+
+                    <span class="navigation-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+
+                            <path
+                                d="M19.4 15A7.9 7.9 0 0 0 20 12A7.9 7.9 0 0 0 19.4 9L21 7L19 5L17 6.6A7.9 7.9 0 0 0 14 6L13 3H11L10 6A7.9 7.9 0 0 0 7 6.6L5 5L3 7L4.6 9A7.9 7.9 0 0 0 4 12C4 13.1 4.2 14.1 4.6 15L3 17L5 19L7 17.4A7.9 7.9 0 0 0 10 18L11 21H13L14 18A7.9 7.9 0 0 0 17 17.4L19 19L21 17L19.4 15Z"
+                                stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+
+
+                    <span class="navigation-text">
+                        Configurações
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+
+            <!-- USUÁRIO -->
+
+            <div class="sidebar-user">
+
+
+                <div class="user-avatar">
+                    PL
+                </div>
+
+
+                <div class="user-details">
+
+                    <span class="user-name">
+                        Administração
+                    </span>
+
+                    <span class="user-role">
+                        Uso interno
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- ÁREA PRINCIPAL -->
+
+        <div class="main-area">
+
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-title">
+
+                    {% block topbar_title %}
+                    PL Mil Transportes
+                    {% endblock %}
+
+                </div>
+
+
+                <div class="topbar-actions">
+
+                    {% block topbar_actions %}
+                    {% endblock %}
+
+                </div>
+
+
+            </header>
+
+
+            <!-- CONTEÚDO -->
+
+            <main class="main-content">
+
+                {% block content %}
+                {% endblock %}
+
+            </main>
+
+
+        </div>
+
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+    {% block extra_scripts %}
+    {% endblock %}
+
+
+</body>
+
+</html>

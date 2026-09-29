@@ -523,11 +523,15 @@ def buscar_servicos_filtrados(
         parametros.append(empresa_id)
 
     if mes is not None:
-        condicoes.append("EXTRACT(MONTH FROM s.data) = %s")
+        condicoes.append(
+            "EXTRACT(MONTH FROM s.data) = %s"
+        )
         parametros.append(mes)
 
     if ano is not None:
-        condicoes.append("EXTRACT(YEAR FROM s.data) = %s")
+        condicoes.append(
+            "EXTRACT(YEAR FROM s.data) = %s"
+        )
         parametros.append(ano)
 
     if condicoes:
@@ -578,6 +582,47 @@ def buscar_anos_servicos():
     conexao.close()
 
     return anos
+
+
+def buscar_servicos_por_mes(ano):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            EXTRACT(
+                MONTH FROM data
+            )::INTEGER AS mes,
+            COUNT(*) AS quantidade_servicos
+        FROM servico
+        WHERE EXTRACT(
+            YEAR FROM data
+        ) = %s
+        GROUP BY
+            EXTRACT(MONTH FROM data)
+        ORDER BY
+            mes;
+        """,
+        (ano,)
+    )
+
+    resultados = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    quantidade_por_mes = {
+        mes: quantidade
+        for mes, quantidade in resultados
+    }
+
+    servicos_por_mes = [
+        quantidade_por_mes.get(mes, 0)
+        for mes in range(1, 13)
+    ]
+
+    return servicos_por_mes
 
 
 def buscar_servico_por_id(servico_id):
@@ -697,12 +742,15 @@ def inserir_servico(
         for funcionario in cursor.fetchall()
     }
 
-    if len(funcionarios_validos) != len(set(funcionarios_ids)):
+    if len(funcionarios_validos) != len(
+        set(funcionarios_ids)
+    ):
         cursor.close()
         conexao.close()
 
         raise ValueError(
-            "Um ou mais funcionários não pertencem à empresa selecionada."
+            "Um ou mais funcionários não pertencem "
+            "à empresa selecionada."
         )
 
     cursor.execute(
@@ -715,7 +763,7 @@ def inserir_servico(
             valor_km_motorista
         )
         VALUES (%s, %s, %s, %s, %s)
-        RETURNING id, km;
+        RETURNING id;
         """,
         (
             empresa_id,
@@ -726,14 +774,7 @@ def inserir_servico(
         )
     )
 
-    resultado_servico = cursor.fetchone()
-
-    print(
-    "SERVIÇO INSERIDO:",
-    resultado_servico
-    )
-
-    servico_id = resultado_servico[0]
+    servico_id = cursor.fetchone()[0]
 
     for funcionario_id in funcionarios_ids:
         cursor.execute(
@@ -821,12 +862,15 @@ def atualizar_servico(
         for funcionario in cursor.fetchall()
     }
 
-    if len(funcionarios_validos) != len(set(funcionarios_ids)):
+    if len(funcionarios_validos) != len(
+        set(funcionarios_ids)
+    ):
         cursor.close()
         conexao.close()
 
         raise ValueError(
-            "Um ou mais funcionários não pertencem à empresa selecionada."
+            "Um ou mais funcionários não pertencem "
+            "à empresa selecionada."
         )
 
     cursor.execute(
@@ -879,46 +923,33 @@ def atualizar_servico(
     conexao.close()
 
 
-
 # ============================================================
 # RELATÓRIOS
 # ============================================================
 
-def buscar_resumo_relatorio(empresa_id, mes, ano):
-
+def buscar_resumo_relatorio(
+    empresa_id,
+    mes,
+    ano
+):
     conexao = conectar_banco()
     cursor = conexao.cursor()
 
     cursor.execute(
         """
         SELECT
-            COUNT(*) AS quantidade_servicos,
-
-            COALESCE(
-                SUM(s.km),
-                0
-            ) AS km_total,
-
-            COALESCE(
-                SUM(
-                    (
-                        SELECT COUNT(*)
-                        FROM servico_funcionario sf
-                        WHERE sf.servico_id = s.id
-                    )
-                ),
-                0
-            ) AS funcionarios_transportados,
-
+            COUNT(DISTINCT s.id) AS quantidade_servicos,
+            COALESCE(SUM(s.km), 0) AS km_total,
+            COUNT(sf.funcionario_id) AS funcionarios_transportados,
             COALESCE(
                 SUM(
                     s.km * s.valor_km_motorista
                 ),
                 0
             ) AS valor_total_motoristas
-
         FROM servico s
-
+        LEFT JOIN servico_funcionario sf
+            ON s.id = sf.servico_id
         WHERE s.empresa_id = %s
         AND EXTRACT(MONTH FROM s.data) = %s
         AND EXTRACT(YEAR FROM s.data) = %s;
@@ -938,7 +969,11 @@ def buscar_resumo_relatorio(empresa_id, mes, ano):
     return resumo
 
 
-def buscar_resumo_motoristas_relatorio(empresa_id, mes, ano):
+def buscar_resumo_motoristas_relatorio(
+    empresa_id,
+    mes,
+    ano
+):
     conexao = conectar_banco()
     cursor = conexao.cursor()
 
@@ -949,7 +984,9 @@ def buscar_resumo_motoristas_relatorio(empresa_id, mes, ano):
             COUNT(DISTINCT s.id) AS quantidade_servicos,
             COALESCE(SUM(s.km), 0) AS km_total,
             COALESCE(
-                SUM(s.km * s.valor_km_motorista),
+                SUM(
+                    s.km * s.valor_km_motorista
+                ),
                 0
             ) AS valor_total
         FROM servico s
@@ -977,6 +1014,7 @@ def buscar_resumo_motoristas_relatorio(empresa_id, mes, ano):
     conexao.close()
 
     return motoristas
+
 
 def excluir_servico(servico_id):
     conexao = conectar_banco()

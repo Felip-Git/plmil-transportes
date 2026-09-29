@@ -1,99 +1,301 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Funcionários</title>
-</head>
 
-<body>
+{% block title %}
+    Funcionários | PL Mil Transportes
+{% endblock %}
 
-    <h1>Funcionários</h1>
 
-    <a href="{{ url_for('cadastrar_funcionario') }}">
-        Cadastrar novo funcionário
+{% block topbar_title %}
+    Funcionários
+{% endblock %}
+
+
+{% block topbar_actions %}
+
+    <a
+        href="{{ url_for('cadastrar_funcionario') }}"
+        class="botao-principal"
+    >
+        + Novo funcionário
     </a>
 
-    <br><br>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div class="page-header-text">
+
+        <h1 class="page-title">
+            Funcionários
+        </h1>
+
+        <p class="page-description">
+            Gerencie os funcionários vinculados às empresas atendidas.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Filtrar funcionários
+            </h2>
+
+            <p class="card-description">
+                Selecione uma empresa para visualizar apenas os funcionários vinculados a ela.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="GET"
+        action="{{ url_for('funcionarios') }}"
+        class="formulario"
+    >
+
+        <div class="form-grid">
+
+            <div class="campo">
+
+                <label for="empresa_id">
+                    Empresa
+                </label>
+
+                <select
+                    id="empresa_id"
+                    name="empresa_id"
+                >
+
+                    <option value="">
+                        Todas as empresas
+                    </option>
+
+                    {% for empresa in empresas %}
+
+                        <option
+                            value="{{ empresa[0] }}"
+                            {% if empresa[0] == empresa_selecionada %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ empresa[1] }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-acoes">
+
+            <a
+                href="{{ url_for('funcionarios') }}"
+                class="botao-secundario"
+            >
+                Limpar filtro
+            </a>
+
+            <button
+                type="submit"
+                class="botao-principal"
+            >
+                Filtrar
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<div style="height: 20px;"></div>
+
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Funcionários cadastrados
+            </h2>
+
+            <p class="card-description">
+
+                {% if empresa_selecionada %}
+
+                    Funcionários da empresa selecionada.
+
+                {% else %}
+
+                    Consulte, edite ou exclua funcionários do sistema.
+
+                {% endif %}
+
+            </p>
+
+        </div>
+
+    </div>
+
 
     {% if funcionarios %}
 
-    <table border="1" cellpadding="8">
+        <div class="tabela-container">
 
-        <thead>
+            <table>
 
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Empresa</th>
-                <th>Ações</th>
-            </tr>
+                <thead>
 
-        </thead>
+                    <tr>
 
-        <tbody>
+                        <th class="centralizado">
+                            ID
+                        </th>
 
-            {% for funcionario in funcionarios %}
+                        <th>
+                            Funcionário
+                        </th>
 
-            <tr>
+                        <th>
+                            Empresa
+                        </th>
 
-                <td>
-                    {{ funcionario[0] }}
-                </td>
+                        <th class="centralizado">
+                            Ações
+                        </th>
 
-                <td>
-                    {{ funcionario[1] }}
-                </td>
+                    </tr>
 
-                <td>
-                    {{ funcionario[2] }}
-                </td>
+                </thead>
 
-                <td>
 
-                    <a href="{{ url_for(
-                        'editar_funcionario',
-                        funcionario_id=funcionario[0]
-                    ) }}">
-                        Editar
-                    </a>
+                <tbody>
 
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'excluir_funcionario_rota',
-                            funcionario_id=funcionario[0]
-                        ) }}"
-                        style="display: inline;"
-                        onsubmit="return confirm(
-                            'Tem certeza que deseja excluir este funcionário?'
-                        );"
-                    >
+                    {% for funcionario in funcionarios %}
 
-                        <button type="submit">
-                            Excluir
-                        </button>
+                        <tr>
 
-                    </form>
+                            <td class="centralizado">
+                                {{ funcionario[0] }}
+                            </td>
 
-                </td>
 
-            </tr>
+                            <td>
 
-            {% endfor %}
+                                <strong>
+                                    {{ funcionario[1] }}
+                                </strong>
 
-        </tbody>
+                            </td>
 
-    </table>
+
+                            <td>
+                                {{ funcionario[2] }}
+                            </td>
+
+
+                            <td>
+
+                                <div class="acoes">
+
+                                    <a
+                                        href="{{ url_for(
+                                            'editar_funcionario',
+                                            funcionario_id=funcionario[0]
+                                        ) }}"
+                                        class="botao-acao"
+                                        title="Editar funcionário"
+                                    >
+                                        ✎
+                                    </a>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'excluir_funcionario_rota',
+                                            funcionario_id=funcionario[0]
+                                        ) }}"
+                                        onsubmit="return confirm(
+                                            'Tem certeza que deseja excluir este funcionário?'
+                                        );"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="botao-acao excluir"
+                                            title="Excluir funcionário"
+                                        >
+                                            🗑
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     {% else %}
 
-    <p>
-        Nenhum funcionário cadastrado.
-    </p>
+        <div class="estado-vazio">
+
+            {% if empresa_selecionada %}
+
+                <strong>
+                    Nenhum funcionário encontrado
+                </strong>
+
+                <span>
+                    A empresa selecionada não possui funcionários cadastrados.
+                </span>
+
+            {% else %}
+
+                <strong>
+                    Nenhum funcionário cadastrado
+                </strong>
+
+                <span>
+                    Cadastre o primeiro funcionário para vinculá-lo a uma empresa.
+                </span>
+
+            {% endif %}
+
+        </div>
 
     {% endif %}
 
-</body>
+</div>
 
-</html>
+{% endblock %}

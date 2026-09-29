@@ -1,41 +1,99 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Empresa</title>
-</head>
 
-<body>
+{% block title %}
+    Editar empresa | PL Mil Transportes
+{% endblock %}
 
-    <h1>Editar Empresa</h1>
 
-    <form method="POST">
+{% block topbar_title %}
+    Editar empresa
+{% endblock %}
 
-        <label for="nome">
-            Nome da empresa:
-        </label>
 
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            value="{{ empresa[1] }}"
-            required
+{% block content %}
+
+    <div class="page-header">
+
+        <div class="page-header-text">
+
+            <h1 class="page-title">
+                Editar empresa
+            </h1>
+
+            <p class="page-description">
+                Atualize os dados da empresa cadastrada no sistema.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                Dados da empresa
+            </div>
+
+            <div class="card-description">
+                Altere o nome da empresa e salve as modificações.
+            </div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            class="formulario"
         >
 
-        <br><br>
+            <div class="form-grid">
 
-        <button type="submit">
-            Salvar alterações
-        </button>
+                <div class="campo">
 
-        <a href="{{ url_for('empresas') }}">
-            Cancelar
-        </a>
+                    <label for="nome">
+                        Nome da empresa
+                    </label>
 
-    </form>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value="{{ empresa[1] }}"
+                        placeholder="Digite o nome da empresa"
+                        required
+                        autofocus
+                    >
 
-</body>
+                </div>
 
-</html>
+            </div>
+
+
+            <div class="form-acoes">
+
+                <a
+                    href="{{ url_for('empresas') }}"
+                    class="botao-secundario"
+                >
+                    Cancelar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="botao-principal"
+                >
+                    Salvar alterações
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}

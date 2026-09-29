@@ -1,30 +1,97 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Empresa</title>
-</head>
+{% extends "base.html" %}
 
-<body>
 
-    <h1>Cadastrar Empresa</h1>
+{% block title %}
+    Nova empresa | PL Mil Transportes
+{% endblock %}
 
-    <form method="POST">
 
-        <label for="nome">Nome da empresa:</label>
+{% block topbar_title %}
+    Nova empresa
+{% endblock %}
 
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            required
+
+{% block content %}
+
+    <div class="page-header">
+
+        <div class="page-header-text">
+
+            <h1 class="page-title">
+                Nova empresa
+            </h1>
+
+            <p class="page-description">
+                Cadastre uma nova empresa atendida pela PL Mil Transportes.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                Dados da empresa
+            </div>
+
+            <div class="card-description">
+                Informe o nome da empresa para realizar o cadastro.
+            </div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            class="formulario"
         >
 
-        <button type="submit">
-            Cadastrar
-        </button>
+            <div class="form-grid">
 
-    </form>
+                <div class="campo">
 
-</body>
-</html>
+                    <label for="nome">
+                        Nome da empresa
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Digite o nome da empresa"
+                        required
+                        autofocus
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-acoes">
+
+                <a
+                    href="{{ url_for('empresas') }}"
+                    class="botao-secundario"
+                >
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="botao-principal"
+                >
+                    Salvar empresa
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}

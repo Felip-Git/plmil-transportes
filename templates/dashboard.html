@@ -1,0 +1,541 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Dashboard | PL Mil Transportes
+{% endblock %}
+
+
+{% block topbar_title %}
+    Dashboard
+{% endblock %}
+
+
+{% block topbar_actions %}
+
+    <a
+        href="{{ url_for('cadastrar_servico') }}"
+        class="botao-principal"
+    >
+        + Novo serviço
+    </a>
+
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- =================================================
+         CABEÇALHO
+    ================================================== -->
+
+    <div class="page-header">
+
+        <div class="page-header-text">
+
+            <h1 class="page-title">
+                Visão geral
+            </h1>
+
+            <p class="page-description">
+                Acompanhe os principais dados da operação da PL Mil Transportes.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         INDICADORES
+    ================================================== -->
+
+    <div class="dashboard-cards">
+
+
+        <!-- SERVIÇOS -->
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon">
+                ▣
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <span class="dashboard-card-label">
+                    Serviços realizados
+                </span>
+
+                <strong class="dashboard-card-value">
+                    {{ total_servicos }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- EMPRESAS -->
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon">
+                ▤
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <span class="dashboard-card-label">
+                    Empresas cadastradas
+                </span>
+
+                <strong class="dashboard-card-value">
+                    {{ total_empresas }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- MOTORISTAS -->
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon">
+                ♙
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <span class="dashboard-card-label">
+                    Motoristas cadastrados
+                </span>
+
+                <strong class="dashboard-card-value">
+                    {{ total_motoristas }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- FUNCIONÁRIOS -->
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-card-icon">
+                ♧
+            </div>
+
+            <div class="dashboard-card-content">
+
+                <span class="dashboard-card-label">
+                    Funcionários cadastrados
+                </span>
+
+                <strong class="dashboard-card-value">
+                    {{ total_funcionarios }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         GRÁFICO + ACESSOS RÁPIDOS
+    ================================================== -->
+
+    <div class="dashboard-grid">
+
+
+        <!-- =================================================
+             SERVIÇOS POR MÊS
+        ================================================== -->
+
+        <div class="card dashboard-grafico">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        Serviços por mês
+                    </div>
+
+                    <div class="card-description">
+                        Quantidade de serviços realizados em {{ ano_atual }}.
+                    </div>
+
+                </div>
+
+                <span class="dashboard-ano">
+                    {{ ano_atual }}
+                </span>
+
+            </div>
+
+
+            <div class="grafico-container">
+
+                <div
+                    class="grafico"
+                    id="grafico-servicos"
+                >
+
+                    {% set meses = [
+                        'Jan',
+                        'Fev',
+                        'Mar',
+                        'Abr',
+                        'Mai',
+                        'Jun',
+                        'Jul',
+                        'Ago',
+                        'Set',
+                        'Out',
+                        'Nov',
+                        'Dez'
+                    ] %}
+
+
+                    {% set maior_valor = servicos_por_mes|max %}
+
+
+                    {% for i in range(12) %}
+
+                        <div class="grafico-coluna">
+
+
+                            <!-- VALOR -->
+
+                            <span class="grafico-valor">
+
+                                {{ servicos_por_mes[i] }}
+
+                            </span>
+
+
+                            <!-- BARRA -->
+
+                            <div class="grafico-barra-area">
+
+                                {% if maior_valor > 0 %}
+
+                                    {% set altura = (
+                                        servicos_por_mes[i]
+                                        / maior_valor
+                                        * 100
+                                    ) %}
+
+                                {% else %}
+
+                                    {% set altura = 0 %}
+
+                                {% endif %}
+
+
+                                <div
+                                    class="grafico-barra"
+                                    style="height: {{ altura }}%;"
+                                    title="{{ servicos_por_mes[i] }} serviço(s)"
+                                >
+                                </div>
+
+                            </div>
+
+
+                            <!-- MÊS -->
+
+                            <span class="grafico-mes">
+
+                                {{ meses[i] }}
+
+                            </span>
+
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ACESSOS RÁPIDOS
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        Acessos rápidos
+                    </div>
+
+                    <div class="card-description">
+                        Ações utilizadas com frequência.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-acoes">
+
+
+                <!-- NOVO SERVIÇO -->
+
+                <a
+                    href="{{ url_for('cadastrar_servico') }}"
+                    class="dashboard-acao"
+                >
+
+                    <span class="dashboard-acao-icon">
+                        +
+                    </span>
+
+                    <span class="dashboard-acao-text">
+
+                        <strong>
+                            Registrar serviço
+                        </strong>
+
+                        <small>
+                            Adicionar um novo serviço
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <!-- NOVA EMPRESA -->
+
+                <a
+                    href="{{ url_for('cadastrar_empresa') }}"
+                    class="dashboard-acao"
+                >
+
+                    <span class="dashboard-acao-icon">
+                        ▤
+                    </span>
+
+                    <span class="dashboard-acao-text">
+
+                        <strong>
+                            Nova empresa
+                        </strong>
+
+                        <small>
+                            Cadastrar empresa atendida
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <!-- NOVO MOTORISTA -->
+
+                <a
+                    href="{{ url_for('cadastrar_motorista') }}"
+                    class="dashboard-acao"
+                >
+
+                    <span class="dashboard-acao-icon">
+                        ♙
+                    </span>
+
+                    <span class="dashboard-acao-text">
+
+                        <strong>
+                            Novo motorista
+                        </strong>
+
+                        <small>
+                            Cadastrar motorista
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <!-- NOVO FUNCIONÁRIO -->
+
+                <a
+                    href="{{ url_for('cadastrar_funcionario') }}"
+                    class="dashboard-acao"
+                >
+
+                    <span class="dashboard-acao-icon">
+                        ♧
+                    </span>
+
+                    <span class="dashboard-acao-text">
+
+                        <strong>
+                            Novo funcionário
+                        </strong>
+
+                        <small>
+                            Vincular funcionário a uma empresa
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         SERVIÇOS RECENTES
+    ================================================== -->
+
+    <div class="card dashboard-recentes">
+
+        <div class="card-header">
+
+            <div>
+
+                <div class="card-title">
+                    Serviços recentes
+                </div>
+
+                <div class="card-description">
+                    Últimos serviços registrados no sistema.
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('servicos') }}"
+                class="botao-secundario"
+            >
+                Ver todos
+            </a>
+
+        </div>
+
+
+        {% if servicos_recentes %}
+
+            <div class="tabela-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Data
+                            </th>
+
+                            <th>
+                                Empresa
+                            </th>
+
+                            <th>
+                                Motorista
+                            </th>
+
+                            <th>
+                                KM
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for servico in servicos_recentes %}
+
+                            <tr>
+
+                                <td>
+                                    #{{ servico[0] }}
+                                </td>
+
+
+                                <td>
+                                    {{ servico[3].strftime('%d/%m/%Y') }}
+                                </td>
+
+
+                                <td>
+
+                                    <strong>
+                                        {{ servico[1] }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+                                    {{ servico[2] }}
+                                </td>
+
+
+                                <td>
+                                    {{ "%.2f"|format(servico[4]|float) }} km
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="estado-vazio">
+
+                <strong>
+                    Nenhum serviço registrado
+                </strong>
+
+                <span>
+                    Os serviços registrados aparecerão aqui.
+                </span>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+{% endblock %}
