@@ -1,57 +1,119 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Motorista</title>
-</head>
 
-<body>
+{% block title %}
+    Editar motorista | PL Mil Transportes
+{% endblock %}
 
-    <h1>Editar Motorista</h1>
 
-    <form method="POST">
+{% block topbar_title %}
+    Editar motorista
+{% endblock %}
 
-        <label for="nome">
-            Nome do motorista:
-        </label>
 
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            value="{{ motorista[1] }}"
-            required
+{% block content %}
+
+    <div class="page-header">
+
+        <div class="page-header-text">
+
+            <h1 class="page-title">
+                Editar motorista
+            </h1>
+
+            <p class="page-description">
+                Atualize os dados e o valor por quilômetro do motorista.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                Dados do motorista
+            </div>
+
+            <div class="card-description">
+                Altere as informações necessárias e salve as modificações.
+            </div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            class="formulario"
         >
 
-        <br><br>
+            <div class="form-grid">
 
-        <label for="valor_km">
-            Valor por KM:
-        </label>
+                <div class="campo">
 
-        <input
-            type="number"
-            id="valor_km"
-            name="valor_km"
-            value="{{ motorista[2] }}"
-            step="0.01"
-            min="0"
-            required
-        >
+                    <label for="nome">
+                        Nome do motorista
+                    </label>
 
-        <br><br>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value="{{ motorista[1] }}"
+                        placeholder="Digite o nome do motorista"
+                        required
+                        autofocus
+                    >
 
-        <button type="submit">
-            Salvar alterações
-        </button>
+                </div>
 
-        <a href="{{ url_for('motoristas') }}">
-            Cancelar
-        </a>
 
-    </form>
+                <div class="campo">
 
-</body>
+                    <label for="valor_km">
+                        Valor por KM
+                    </label>
 
-</html>
+                    <input
+                        type="number"
+                        id="valor_km"
+                        name="valor_km"
+                        value="{{ motorista[2] }}"
+                        placeholder="0,00"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-acoes">
+
+                <a
+                    href="{{ url_for('motoristas') }}"
+                    class="botao-secundario"
+                >
+                    Cancelar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="botao-principal"
+                >
+                    Salvar alterações
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}

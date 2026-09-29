@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}
+Configurações | PL Mil Transportes
+{% endblock %}
+
+{% block topbar_title %}
+Configurações
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Configurações
+        </h1>
+
+        <p class="page-description">
+            Consulte as informações e configurações do sistema.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- Sistema -->
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Sistema
+            </h2>
+
+            <p class="card-description">
+                Informações gerais da aplicação.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="configuracao-lista">
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Nome do sistema
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.nome }}
+            </span>
+
+        </div>
+
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Descrição
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.descricao }}
+            </span>
+
+        </div>
+
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Versão
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.versao }}
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div style="height: 20px;"></div>
+
+
+<!-- Preferências -->
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Preferências
+            </h2>
+
+            <p class="card-description">
+                Padrões utilizados pelo sistema.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="configuracao-lista">
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Formato de data
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.data }}
+            </span>
+
+        </div>
+
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Moeda
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.moeda }}
+            </span>
+
+        </div>
+
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Idioma
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.idioma }}
+            </span>
+
+        </div>
+
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Modo escuro
+            </span>
+
+            <label class="interruptor">
+
+                <input type="checkbox" id="modoEscuro">
+
+                <span class="interruptor-trilho">
+                    <span class="interruptor-botao"></span>
+                </span>
+
+            </label>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div style="height: 20px;"></div>
+
+
+<!-- Status do sistema -->
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Status do sistema
+            </h2>
+
+            <p class="card-description">
+                Verificação da conexão com o banco de dados.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if banco_conectado %}
+
+    <div class="status-indicador status-sucesso">
+
+        <span class="status-ponto"></span>
+
+        <div>
+
+            <strong>
+                Banco de dados conectado
+            </strong>
+
+            <span>
+                A conexão com o PostgreSQL está funcionando normalmente.
+            </span>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="status-indicador status-erro">
+
+        <span class="status-ponto"></span>
+
+        <div>
+
+            <strong>
+                Banco de dados indisponível
+            </strong>
+
+            <span>
+                Não foi possível estabelecer conexão com o PostgreSQL.
+            </span>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<div style="height: 20px;"></div>
+
+
+<!-- Tecnologias -->
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Tecnologias
+            </h2>
+
+            <p class="card-description">
+                Tecnologias utilizadas no desenvolvimento do sistema.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="configuracao-lista">
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Backend
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.backend }}
+            </span>
+
+        </div>
+
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Banco de dados
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.banco }}
+            </span>
+
+        </div>
+
+
+        <div class="configuracao-item">
+
+            <span class="configuracao-label">
+                Interface
+            </span>
+
+            <span class="configuracao-valor">
+                {{ configuracoes_sistema.interface }}
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

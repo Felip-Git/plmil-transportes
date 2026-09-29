@@ -1,23 +1,56 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Não foi possível realizar a operação</title>
-</head>
 
-<body>
+{% block title %}
+    Erro | PL Mil Transportes
+{% endblock %}
 
-    <h1>Não foi possível realizar a operação</h1>
 
-    <p>
-        {{ mensagem }}
-    </p>
+{% block topbar_title %}
+    Erro
+{% endblock %}
 
-    <a href="{{ voltar }}">
-        Voltar
-    </a>
 
-</body>
+{% block content %}
 
-</html>
+    <div class="page-header">
+
+        <div class="page-header-text">
+
+            <h1 class="page-title">
+                Ocorreu um erro
+            </h1>
+
+            <p class="page-description">
+                Não foi possível concluir a operação solicitada.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="estado-vazio">
+
+            <strong>
+                {{ mensagem }}
+            </strong>
+
+            <span>
+                Verifique as informações e tente novamente.
+            </span>
+
+            <a
+                href="{{ url_for('servicos') }}"
+                class="botao-principal"
+            >
+                Voltar para serviços
+            </a>
+
+        </div>
+
+    </div>
+
+{% endblock %}

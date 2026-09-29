@@ -1,628 +1,1204 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% extends "base.html" %}
 
-<head>
+{% block title %}
 
-    <meta charset="UTF-8">
 
-    <title>
-        Editar Serviço
-    </title>
+Editar Serviço | PL Mil Transportes
 
-</head>
 
-<body>
+{% endblock %}
 
-    <h1>
-        Editar Serviço #{{ servico[0] }}
+{% block topbar_title %}
+
+
+Editar serviço
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+
+<div class="page-header-text">
+
+    <h1 class="page-title">
+
+        Editar serviço
+
     </h1>
 
+    <p class="page-description">
 
-    <form
-        method="POST"
-        id="form-servico"
-    >
+        Atualize os dados do serviço e os funcionários transportados.
 
-        <label for="empresa_id">
-            Empresa:
-        </label>
+    </p>
 
-        <select
-            id="empresa_id"
-            name="empresa_id"
-            required
-        >
-
-            <option value="">
-                Selecione uma empresa
-            </option>
-
-            {% for empresa in empresas %}
-
-            <option
-                value="{{ empresa[0] }}"
-                {% if empresa[0] == servico[1] %}
-                    selected
-                {% endif %}
-            >
-                {{ empresa[1] }}
-            </option>
-
-            {% endfor %}
-
-        </select>
+</div>
 
 
-        <br><br>
+</div>
+
+<div class="card">
 
 
-        <label for="motorista_id">
-            Motorista:
-        </label>
+<div class="card-header">
 
-        <select
-            id="motorista_id"
-            name="motorista_id"
-            required
-        >
+    <div>
 
-            <option value="">
-                Selecione um motorista
-            </option>
+        <h2 class="card-title">
 
-            {% for motorista in motoristas %}
+            Dados do serviço
 
-            <option
-                value="{{ motorista[0] }}"
-                {% if motorista[0] == servico[2] %}
-                    selected
-                {% endif %}
-            >
-                {{ motorista[1] }}
-            </option>
-
-            {% endfor %}
-
-        </select>
-
-
-        <br><br>
-
-
-        <label for="data">
-            Data:
-        </label>
-
-        <input
-            type="date"
-            id="data"
-            name="data"
-            value="{{ servico[3].strftime('%Y-%m-%d') }}"
-            required
-        >
-
-
-        <br><br>
-
-
-        <label for="km">
-            KM:
-        </label>
-
-        <input
-            type="number"
-            id="km"
-            name="km"
-            step="0.01"
-            min="0"
-            value="{{ servico[4] }}"
-            required
-        >
-
-
-        <br><br>
-
-
-        <h2>
-            Funcionários
         </h2>
 
+        <p class="card-description">
 
-        <label for="busca-funcionario">
-            Buscar funcionário:
-        </label>
+            Altere a empresa, motorista, data, quilometragem e funcionários transportados.
 
-        <input
-            type="text"
-            id="busca-funcionario"
-            placeholder="Digite o nome do funcionário"
-            disabled
+        </p>
+
+    </div>
+
+</div>
+
+
+<form
+    method="POST"
+    id="form-servico"
+    class="formulario"
+>
+
+    <div class="form-grid">
+
+        <!-- EMPRESA -->
+
+        <div class="campo">
+
+            <label for="empresa_id">
+
+                Empresa
+
+            </label>
+
+            <select
+                id="empresa_id"
+                name="empresa_id"
+                required
+            >
+
+                <option value="">
+
+                    Selecione uma empresa
+
+                </option>
+
+                {% for empresa in empresas %}
+
+                    <option
+                        value="{{ empresa[0] }}"
+                        {% if empresa[0] == servico[1] %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ empresa[1] }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- MOTORISTA -->
+
+        <div class="campo">
+
+            <label for="motorista_id">
+
+                Motorista
+
+            </label>
+
+            <select
+                id="motorista_id"
+                name="motorista_id"
+                required
+            >
+
+                <option value="">
+
+                    Selecione um motorista
+
+                </option>
+
+                {% for motorista in motoristas %}
+
+                    <option
+                        value="{{ motorista[0] }}"
+                        {% if motorista[0] == servico[2] %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ motorista[1] }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- DATA -->
+
+        <div class="campo">
+
+            <label for="data">
+
+                Data do serviço
+
+            </label>
+
+            <input
+                type="date"
+                id="data"
+                name="data"
+                value="{{ servico[3].strftime('%Y-%m-%d') }}"
+                required
+            >
+
+        </div>
+
+
+        <!-- KM -->
+
+        <div class="campo">
+
+            <label for="km">
+
+                KM
+
+            </label>
+
+            <input
+                type="text"
+                id="km"
+                name="km"
+                value="{{ servico[4] }}"
+                placeholder="Ex.: 25,00"
+                required
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- FUNCIONÁRIOS -->
+
+    <div
+        class="card"
+        style="
+            margin-top: 24px;
+            border-radius: 10px;
+        "
+    >
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+
+                    Funcionários transportados
+
+                </h2>
+
+                <p class="card-description">
+
+                    Selecione os funcionários vinculados à empresa.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div style="padding: 22px;">
+
+            <!-- PESQUISA -->
+
+            <div class="campo">
+
+                <label for="busca-funcionario">
+
+                    Pesquisar funcionário
+
+                </label>
+
+                <input
+                    type="text"
+                    id="busca-funcionario"
+                    placeholder="Digite o nome do funcionário..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- LISTA -->
+
+            <div
+                id="lista-funcionarios"
+                style="margin-top: 12px;"
+            >
+
+                <div class="estado-vazio">
+
+                    <strong>
+
+                        Carregando funcionários...
+
+                    </strong>
+
+                    <span>
+
+                        Aguarde um momento.
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- SELECIONADOS -->
+
+            <div
+                id="funcionarios-selecionados"
+                style="margin-top: 22px;"
+            >
+
+                <strong
+                    style="
+                        display: block;
+                        margin-bottom: 10px;
+                        color: #374151;
+                        font-size: 12px;
+                    "
+                >
+
+                    Funcionários selecionados
+
+                </strong>
+
+
+                <p
+                    id="nenhum-selecionado"
+                    style="
+                        color: #9ca3af;
+                        font-size: 11px;
+                    "
+                >
+
+                    Nenhum funcionário selecionado.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- AÇÕES -->
+
+    <div class="form-acoes">
+
+        <a
+            href="{{ url_for('servicos') }}"
+            class="botao-secundario"
         >
 
-
-        <br><br>
-
-
-        <div id="lista-funcionarios">
-
-            <p>
-                Carregando funcionários...
-            </p>
-
-        </div>
-
-
-        <br>
-
-
-        <h3>
-            Funcionários selecionados
-        </h3>
-
-
-        <div id="funcionarios-selecionados">
-
-            <p id="nenhum-selecionado">
-                Nenhum funcionário selecionado.
-            </p>
-
-        </div>
-
-
-        <br><br>
-
-
-        <button type="submit">
-            Salvar alterações
-        </button>
-
-        <a href="{{ url_for('servicos') }}">
             Cancelar
+
         </a>
 
-    </form>
+
+        <button
+            type="submit"
+            class="botao-principal"
+        >
+
+            Salvar alterações
+
+        </button>
+
+    </div>
+
+</form>
 
 
-    <script>
+</div>
 
-        const empresaSelect =
-            document.getElementById("empresa_id");
+{% endblock %}
 
-        const buscaFuncionario =
-            document.getElementById("busca-funcionario");
+{% block extra_scripts %}
 
-        const listaFuncionarios =
-            document.getElementById("lista-funcionarios");
+<script>
 
-        const funcionariosSelecionados =
-            document.getElementById("funcionarios-selecionados");
-
-        const nenhumSelecionado =
-            document.getElementById("nenhum-selecionado");
-
-        const formServico =
-            document.getElementById("form-servico");
-
-
-        let funcionarios = [];
-
-        let selecionados = new Map();
-
-
-        const funcionariosIniciais =
-            {{ funcionarios_selecionados | tojson }};
-
-
-        empresaSelect.addEventListener(
-            "change",
-            carregarFuncionarios
+    const empresaSelect =
+        document.getElementById(
+            "empresa_id"
         );
 
 
-        async function carregarFuncionarios() {
-
-            const empresaId =
-                empresaSelect.value;
-
-
-            funcionarios = [];
-
-
-            if (!empresaId) {
-
-                selecionados.clear();
-
-                atualizarSelecionados();
-
-                buscaFuncionario.disabled = true;
-
-                buscaFuncionario.value = "";
-
-                listaFuncionarios.innerHTML =
-                    "<p>Nenhuma empresa selecionada.</p>";
-
-                return;
-            }
-
-
-            buscaFuncionario.disabled = false;
-
-            buscaFuncionario.value = "";
-
-            listaFuncionarios.innerHTML =
-                "<p>Carregando funcionários...</p>";
-
-
-            try {
-
-                const resposta = await fetch(
-                    `/funcionarios/empresa/${empresaId}`
-                );
-
-
-                if (!resposta.ok) {
-
-                    throw new Error(
-                        "Erro ao buscar funcionários."
-                    );
-
-                }
-
-
-                funcionarios =
-                    await resposta.json();
-
-
-                renderizarFuncionarios();
-
-
-            } catch (erro) {
-
-                console.error(erro);
-
-                listaFuncionarios.innerHTML =
-                    "<p>Não foi possível carregar os funcionários.</p>";
-
-            }
-
-        }
-
-
-        buscaFuncionario.addEventListener(
-            "input",
-            renderizarFuncionarios
+    const buscaFuncionario =
+        document.getElementById(
+            "busca-funcionario"
         );
 
 
-        function renderizarFuncionarios() {
-
-            const busca =
-                buscaFuncionario.value
-                    .toLowerCase()
-                    .trim();
+    const listaFuncionarios =
+        document.getElementById(
+            "lista-funcionarios"
+        );
 
 
-            const funcionariosFiltrados =
-                funcionarios.filter(
-                    funcionario =>
-                        funcionario.nome
-                            .toLowerCase()
-                            .includes(busca)
-                );
+    const funcionariosSelecionados =
+        document.getElementById(
+            "funcionarios-selecionados"
+        );
 
 
-            listaFuncionarios.innerHTML = "";
+    const nenhumSelecionado =
+        document.getElementById(
+            "nenhum-selecionado"
+        );
 
 
-            if (funcionariosFiltrados.length === 0) {
-
-                listaFuncionarios.innerHTML =
-                    "<p>Nenhum funcionário encontrado.</p>";
-
-                return;
-
-            }
+    const formServico =
+        document.getElementById(
+            "form-servico"
+        );
 
 
-            funcionariosFiltrados.forEach(
-                funcionario => {
-
-                    const item =
-                        document.createElement("div");
+    let funcionarios = [];
 
 
-                    const nome =
-                        document.createElement("span");
-
-                    nome.textContent =
-                        funcionario.nome;
+    const selecionados =
+        new Map();
 
 
-                    const botao =
-                        document.createElement("button");
+    /*
+     * Funcionários que já estavam
+     * vinculados ao serviço.
+     */
 
-                    botao.type = "button";
-
-                    botao.textContent =
-                        selecionados.has(funcionario.id)
-                            ? "Adicionado"
-                            : "Adicionar";
+    const funcionariosIniciais =
+        {{ funcionarios_selecionados | tojson }};
 
 
-                    botao.disabled =
-                        selecionados.has(funcionario.id);
-
-
-                    botao.addEventListener(
-                        "click",
-                        function () {
-
-                            adicionarFuncionario(
-                                funcionario
-                            );
-
-                        }
-                    );
-
-
-                    item.appendChild(nome);
-
-                    item.appendChild(
-                        document.createTextNode(" ")
-                    );
-
-                    item.appendChild(botao);
-
-                    listaFuncionarios.appendChild(item);
-
-                }
-            );
-
-        }
-
-
-        function adicionarFuncionario(
-            funcionario
-        ) {
+    funcionariosIniciais.forEach(
+        funcionario => {
 
             selecionados.set(
                 funcionario.id,
                 funcionario
             );
 
+        }
+    );
 
-            atualizarSelecionados();
 
-            renderizarFuncionarios();
+    /*
+     * Carrega os funcionários da empresa.
+     */
+
+    empresaSelect.addEventListener(
+        "change",
+        carregarFuncionarios
+    );
+
+
+    async function carregarFuncionarios() {
+
+        const empresaId =
+            empresaSelect.value;
+
+
+        funcionarios = [];
+
+
+        selecionados.clear();
+
+
+        atualizarSelecionados();
+
+
+        if (!empresaId) {
+
+            buscaFuncionario.disabled = true;
+
+            buscaFuncionario.value = "";
+
+
+            listaFuncionarios.innerHTML = `
+
+                <div class="estado-vazio">
+
+                    <strong>
+
+                        Nenhuma empresa selecionada
+
+                    </strong>
+
+                    <span>
+
+                        Selecione uma empresa para carregar os funcionários.
+
+                    </span>
+
+                </div>
+
+            `;
+
+            return;
 
         }
 
 
-        function removerFuncionario(
-            funcionarioId
+        buscaFuncionario.disabled = false;
+
+        buscaFuncionario.value = "";
+
+
+        listaFuncionarios.innerHTML = `
+
+            <div class="estado-vazio">
+
+                <strong>
+
+                    Carregando funcionários...
+
+                </strong>
+
+                <span>
+
+                    Aguarde um momento.
+
+                </span>
+
+            </div>
+
+        `;
+
+
+        try {
+
+            const resposta =
+                await fetch(
+                    `/api/funcionarios/${encodeURIComponent(empresaId)}`,
+                    {
+                        method: "GET",
+                        cache: "no-store",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
+                );
+
+
+            if (!resposta.ok) {
+
+                throw new Error(
+                    `Erro HTTP ${resposta.status}`
+                );
+
+            }
+
+
+            const dados =
+                await resposta.json();
+
+
+            if (!Array.isArray(dados)) {
+
+                throw new Error(
+                    "Resposta inválida do servidor."
+                );
+
+            }
+
+
+            funcionarios = dados;
+
+
+            renderizarFuncionarios();
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao carregar funcionários:",
+                erro
+            );
+
+
+            listaFuncionarios.innerHTML = `
+
+                <div class="estado-vazio">
+
+                    <strong>
+
+                        Não foi possível carregar os funcionários
+
+                    </strong>
+
+                    <span>
+
+                        Verifique a conexão com o servidor e tente novamente.
+
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    /*
+     * Pesquisa por nome.
+     */
+
+    buscaFuncionario.addEventListener(
+        "input",
+        renderizarFuncionarios
+    );
+
+
+    function renderizarFuncionarios() {
+
+        const busca =
+            buscaFuncionario.value
+                .toLowerCase()
+                .trim();
+
+
+        const funcionariosFiltrados =
+            funcionarios.filter(
+                funcionario =>
+                    funcionario.nome
+                        .toLowerCase()
+                        .includes(busca)
+            );
+
+
+        listaFuncionarios.innerHTML = "";
+
+
+        if (
+            funcionariosFiltrados.length === 0
         ) {
 
-            selecionados.delete(
-                funcionarioId
-            );
+            listaFuncionarios.innerHTML = `
 
+                <div class="estado-vazio">
 
-            atualizarSelecionados();
+                    <strong>
 
-            renderizarFuncionarios();
+                        Nenhum funcionário encontrado
 
-        }
+                    </strong>
 
+                    <span>
 
-        function atualizarSelecionados() {
+                        Não existem funcionários cadastrados para esta empresa com esse nome.
 
-            const itensAntigos =
-                document.querySelectorAll(
-                    ".funcionario-hidden"
-                );
+                    </span>
 
+                </div>
 
-            itensAntigos.forEach(
-                item => item.remove()
-            );
+            `;
 
-
-            const itensSelecionados =
-                funcionariosSelecionados.querySelectorAll(
-                    ".funcionario-selecionado"
-                );
-
-
-            itensSelecionados.forEach(
-                item => item.remove()
-            );
-
-
-            if (selecionados.size === 0) {
-
-                nenhumSelecionado.style.display =
-                    "block";
-
-                return;
-
-            }
-
-
-            nenhumSelecionado.style.display =
-                "none";
-
-
-            selecionados.forEach(
-                funcionario => {
-
-                    const item =
-                        document.createElement("div");
-
-                    item.className =
-                        "funcionario-selecionado";
-
-
-                    const nome =
-                        document.createElement("span");
-
-                    nome.textContent =
-                        funcionario.nome;
-
-
-                    const botao =
-                        document.createElement("button");
-
-                    botao.type = "button";
-
-                    botao.textContent =
-                        "Remover";
-
-
-                    botao.addEventListener(
-                        "click",
-                        function () {
-
-                            removerFuncionario(
-                                funcionario.id
-                            );
-
-                        }
-                    );
-
-
-                    item.appendChild(nome);
-
-                    item.appendChild(
-                        document.createTextNode(" ")
-                    );
-
-                    item.appendChild(botao);
-
-                    funcionariosSelecionados.appendChild(
-                        item
-                    );
-
-
-                    const hidden =
-                        document.createElement("input");
-
-                    hidden.type = "hidden";
-
-                    hidden.name =
-                        "funcionarios_ids";
-
-                    hidden.value =
-                        funcionario.id;
-
-                    hidden.className =
-                        "funcionario-hidden";
-
-
-                    formServico.appendChild(
-                        hidden
-                    );
-
-                }
-            );
+            return;
 
         }
 
 
-        formServico.addEventListener(
-            "submit",
-            function (evento) {
+        funcionariosFiltrados.forEach(
+            funcionario => {
 
-                if (selecionados.size === 0) {
-
-                    evento.preventDefault();
-
-                    alert(
-                        "Selecione pelo menos um funcionário."
+                const item =
+                    document.createElement(
+                        "div"
                     );
 
-                }
 
-            }
-        );
-
-
-        async function carregarFuncionariosIniciais() {
-
-            const empresaId =
-                empresaSelect.value;
+                item.className =
+                    "funcionario-item";
 
 
-            if (!empresaId) {
-
-                return;
-
-            }
+                item.style.display =
+                    "flex";
 
 
-            buscaFuncionario.disabled = false;
+                item.style.alignItems =
+                    "center";
 
 
-            try {
-
-                const resposta = await fetch(
-                    `/funcionarios/empresa/${empresaId}`
-                );
+                item.style.justifyContent =
+                    "space-between";
 
 
-                if (!resposta.ok) {
+                item.style.padding =
+                    "11px 13px";
 
-                    throw new Error(
-                        "Erro ao buscar funcionários."
+
+                item.style.marginBottom =
+                    "6px";
+
+
+                item.style.border =
+                    "1px solid #e5e7eb";
+
+
+                item.style.borderRadius =
+                    "8px";
+
+
+                item.style.background =
+                    "#ffffff";
+
+
+                const nome =
+                    document.createElement(
+                        "span"
                     );
 
-                }
+
+                nome.textContent =
+                    funcionario.nome;
 
 
-                funcionarios =
-                    await resposta.json();
+                nome.style.color =
+                    "#374151";
 
 
-                funcionarios.forEach(
-                    funcionario => {
+                nome.style.fontSize =
+                    "12px";
 
-                        if (
-                            funcionariosIniciais.includes(
-                                funcionario.id
-                            )
-                        ) {
 
-                            selecionados.set(
-                                funcionario.id,
-                                funcionario
-                            );
+                nome.style.fontWeight =
+                    "500";
 
-                        }
+
+                const botao =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                botao.type =
+                    "button";
+
+
+                const jaSelecionado =
+                    selecionados.has(
+                        funcionario.id
+                    );
+
+
+                botao.textContent =
+                    jaSelecionado
+                        ? "Adicionado"
+                        : "Adicionar";
+
+
+                botao.disabled =
+                    jaSelecionado;
+
+
+                botao.className =
+                    jaSelecionado
+                        ? "botao-secundario"
+                        : "botao-principal";
+
+
+                botao.style.minHeight =
+                    "32px";
+
+
+                botao.addEventListener(
+                    "click",
+                    function () {
+
+                        adicionarFuncionario(
+                            funcionario
+                        );
 
                     }
                 );
 
 
-                atualizarSelecionados();
+                item.appendChild(
+                    nome
+                );
 
-                renderizarFuncionarios();
+
+                item.appendChild(
+                    botao
+                );
 
 
-            } catch (erro) {
-
-                console.error(erro);
-
-                listaFuncionarios.innerHTML =
-                    "<p>Não foi possível carregar os funcionários.</p>";
+                listaFuncionarios.appendChild(
+                    item
+                );
 
             }
+        );
+
+    }
+
+
+    /*
+     * Adiciona funcionário.
+     */
+
+    function adicionarFuncionario(
+        funcionario
+    ) {
+
+        selecionados.set(
+            funcionario.id,
+            funcionario
+        );
+
+
+        atualizarSelecionados();
+
+        renderizarFuncionarios();
+
+    }
+
+
+    /*
+     * Remove funcionário.
+     */
+
+    function removerFuncionario(
+        funcionarioId
+    ) {
+
+        selecionados.delete(
+            funcionarioId
+        );
+
+
+        atualizarSelecionados();
+
+        renderizarFuncionarios();
+
+    }
+
+
+    /*
+     * Atualiza a lista de selecionados
+     * e os campos enviados ao Flask.
+     */
+
+    function atualizarSelecionados() {
+
+        const itensAntigos =
+            document.querySelectorAll(
+                ".funcionario-hidden"
+            );
+
+
+        itensAntigos.forEach(
+            item => item.remove()
+        );
+
+
+        const itensSelecionados =
+            funcionariosSelecionados.querySelectorAll(
+                ".funcionario-selecionado"
+            );
+
+
+        itensSelecionados.forEach(
+            item => item.remove()
+        );
+
+
+        if (
+            selecionados.size === 0
+        ) {
+
+            nenhumSelecionado.style.display =
+                "block";
+
+            return;
 
         }
 
 
-        carregarFuncionariosIniciais();
+        nenhumSelecionado.style.display =
+            "none";
 
-    </script>
 
-</body>
+        selecionados.forEach(
+            funcionario => {
 
-</html>
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "funcionario-selecionado";
+
+
+                item.style.display =
+                    "flex";
+
+
+                item.style.alignItems =
+                    "center";
+
+
+                item.style.justifyContent =
+                    "space-between";
+
+
+                item.style.padding =
+                    "10px 12px";
+
+
+                item.style.marginBottom =
+                    "6px";
+
+
+                item.style.borderRadius =
+                    "7px";
+
+
+                item.style.background =
+                    "#eff6ff";
+
+
+                item.style.border =
+                    "1px solid #dbeafe";
+
+
+                const nome =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                nome.textContent =
+                    funcionario.nome;
+
+
+                nome.style.color =
+                    "#1e40af";
+
+
+                nome.style.fontSize =
+                    "12px";
+
+
+                nome.style.fontWeight =
+                    "600";
+
+
+                const botao =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                botao.type =
+                    "button";
+
+
+                botao.textContent =
+                    "Remover";
+
+
+                botao.className =
+                    "botao-remover-funcionario";
+
+
+                botao.addEventListener(
+                    "click",
+                    function () {
+
+                        removerFuncionario(
+                            funcionario.id
+                        );
+
+                    }
+                );
+
+
+                item.appendChild(
+                    nome
+                );
+
+
+                item.appendChild(
+                    botao
+                );
+
+
+                funcionariosSelecionados.appendChild(
+                    item
+                );
+
+
+                const hidden =
+                    document.createElement(
+                        "input"
+                    );
+
+
+                hidden.type =
+                    "hidden";
+
+
+                hidden.name =
+                    "funcionarios_ids";
+
+
+                hidden.value =
+                    funcionario.id;
+
+
+                hidden.className =
+                    "funcionario-hidden";
+
+
+                formServico.appendChild(
+                    hidden
+                );
+
+            }
+        );
+
+    }
+
+
+    /*
+     * Validação do formulário.
+     */
+
+    formServico.addEventListener(
+        "submit",
+        function (evento) {
+
+            if (
+                selecionados.size === 0
+            ) {
+
+                evento.preventDefault();
+
+
+                alert(
+                    "Selecione pelo menos um funcionário."
+                );
+
+
+                return;
+
+            }
+
+        }
+    );
+
+
+    /*
+     * Carregamento inicial.
+     *
+     * A empresa atual já vem
+     * selecionada pelo serviço.
+     */
+
+    async function iniciarTela() {
+
+        const empresaId =
+            empresaSelect.value;
+
+
+        if (!empresaId) {
+
+            buscaFuncionario.disabled = true;
+
+
+            listaFuncionarios.innerHTML = `
+
+                <div class="estado-vazio">
+
+                    <strong>
+
+                        Nenhuma empresa selecionada
+
+                    </strong>
+
+                    <span>
+
+                        Selecione uma empresa para carregar os funcionários.
+
+                    </span>
+
+                </div>
+
+            `;
+
+
+            atualizarSelecionados();
+
+
+            return;
+
+        }
+
+
+        buscaFuncionario.disabled = false;
+
+
+        await carregarFuncionariosSemLimparSelecionados();
+
+
+        atualizarSelecionados();
+
+    }
+
+
+    /*
+     * Carregamento inicial sem apagar
+     * os funcionários já vinculados.
+     */
+
+    async function carregarFuncionariosSemLimparSelecionados() {
+
+        const empresaId =
+            empresaSelect.value;
+
+
+        listaFuncionarios.innerHTML = `
+
+            <div class="estado-vazio">
+
+                <strong>
+
+                    Carregando funcionários...
+
+                </strong>
+
+                <span>
+
+                    Aguarde um momento.
+
+                </span>
+
+            </div>
+
+        `;
+
+
+        try {
+
+            const resposta =
+                await fetch(
+                    `/api/funcionarios/${encodeURIComponent(empresaId)}`,
+                    {
+                        method: "GET",
+                        cache: "no-store",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
+                );
+
+
+            if (!resposta.ok) {
+
+                throw new Error(
+                    `Erro HTTP ${resposta.status}`
+                );
+
+            }
+
+
+            const dados =
+                await resposta.json();
+
+
+            if (!Array.isArray(dados)) {
+
+                throw new Error(
+                    "Resposta inválida do servidor."
+                );
+
+            }
+
+
+            funcionarios = dados;
+
+
+            renderizarFuncionarios();
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao carregar funcionários:",
+                erro
+            );
+
+
+            listaFuncionarios.innerHTML = `
+
+                <div class="estado-vazio">
+
+                    <strong>
+
+                        Não foi possível carregar os funcionários
+
+                    </strong>
+
+                    <span>
+
+                        Verifique a conexão com o servidor e tente novamente.
+
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    iniciarTela();
+
+</script>
+
+{% endblock %}
