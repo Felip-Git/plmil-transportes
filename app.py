@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from flask import (
     Flask,
@@ -7,7 +8,13 @@ from flask import (
     request,
     redirect,
     url_for,
-    send_file
+    send_file,
+    session
+)
+
+from werkzeug.security import (
+    check_password_hash,
+    generate_password_hash
 )
 
 from relatorio_excel import (
@@ -42,12 +49,359 @@ from database import (
     atualizar_servico,
     excluir_servico,
     buscar_resumo_relatorio,
-    buscar_resumo_motoristas_relatorio
+    buscar_resumo_motoristas_relatorio,
+    buscar_usuario_por_email,
+    buscar_usuario_por_id,
+    inserir_usuario,
+    buscar_usuarios,
+    atualizar_status_usuario
 )
 
 
 app = Flask(__name__)
 
+
+# ============================================================
+# CONFIGURAÇÃO DE SESSÃO
+# ============================================================
+
+chave_secreta = os.getenv("FLASK_SECRET_KEY")
+
+if not chave_secreta:
+    raise RuntimeError(
+        "A variável FLASK_SECRET_KEY não foi configurada no arquivo .env."
+    )
+
+app.config["SECRET_KEY"] = chave_secreta
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = (
+    os.getenv("FLASK_HTTPS", "0") == "1"
+)
+
+
+# ============================================================
+# PROTEÇÃO DAS ROTAS
+# ============================================================
+
+@app.before_request
+def proteger_rotas():
+
+    rotas_publicas = {
+        "login",
+        "static"
+    }
+
+    if request.endpoint in rotas_publicas:
+        return None
+
+    if "usuario_id" not in session:
+        return redirect(
+            url_for(
+                "login",
+                proxima=request.path
+            )
+        )
+
+    return None
+
+
+# ============================================================
+# VERIFICAÇÃO DE ADMINISTRADOR
+# ============================================================
+
+def usuario_eh_administrador():
+
+    return (
+        session.get("usuario_perfil")
+        == "ADMINISTRADOR"
+    )
+
+# ============================================================
+# LOGIN
+# ============================================================
+
+@app.route(
+    "/login",
+    methods=["GET", "POST"]
+)
+def login():
+
+    if "usuario_id" in session:
+        return redirect(
+            url_for("dashboard")
+        )
+
+    proxima = request.args.get(
+        "proxima",
+        ""
+    )
+
+    if request.method == "POST":
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        senha = request.form.get(
+            "senha",
+            ""
+        )
+
+        usuario = buscar_usuario_por_email(
+            email
+        )
+
+        if (
+            usuario is None
+            or not usuario[5]
+            or not check_password_hash(
+                usuario[3],
+                senha
+            )
+        ):
+
+            return render_template(
+                "login.html",
+                erro="E-mail ou senha inválidos.",
+                proxima=proxima
+            )
+
+        session.clear()
+
+        session["usuario_id"] = usuario[0]
+        session["usuario_nome"] = usuario[1]
+        session["usuario_email"] = usuario[2]
+        session["usuario_perfil"] = usuario[4]
+
+        if (
+            proxima.startswith("/")
+            and not proxima.startswith("//")
+        ):
+
+            return redirect(
+                proxima
+            )
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    return render_template(
+        "login.html",
+        erro=None,
+        proxima=proxima
+    )
+
+
+# ============================================================
+# LOGOUT
+# ============================================================
+
+@app.route(
+    "/logout",
+    methods=["POST"]
+)
+def logout():
+
+    session.clear()
+
+    return redirect(
+        url_for("login")
+    )
+
+
+# ============================================================
+# USUÁRIOS
+# ============================================================
+
+@app.route("/usuarios")
+def usuarios():
+
+    if not usuario_eh_administrador():
+        return (
+            "Acesso não autorizado.",
+            403
+        )
+
+    lista_usuarios = buscar_usuarios()
+
+    return render_template(
+        "usuarios.html",
+        usuarios=lista_usuarios
+    )
+
+
+@app.route(
+    "/usuarios/cadastrar",
+    methods=["GET", "POST"]
+)
+def cadastrar_usuario():
+
+    if not usuario_eh_administrador():
+        return (
+            "Acesso não autorizado.",
+            403
+        )
+
+    if request.method == "POST":
+
+        nome = request.form.get(
+            "nome",
+            ""
+        ).strip()
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        senha = request.form.get(
+            "senha",
+            ""
+        )
+
+        confirmar_senha = request.form.get(
+            "confirmar_senha",
+            ""
+        )
+
+        perfil = request.form.get(
+            "perfil",
+            "OPERADOR"
+        ).strip().upper()
+
+        if not nome:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="Informe o nome do usuário."
+            )
+
+        if not email:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="Informe o e-mail do usuário."
+            )
+
+        if not senha:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="Informe uma senha."
+            )
+
+        if len(senha) < 6:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="A senha deve possuir pelo menos 6 caracteres."
+            )
+
+        if senha != confirmar_senha:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="As senhas não são iguais."
+            )
+
+        if perfil not in {
+            "ADMINISTRADOR",
+            "OPERADOR"
+        }:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="Perfil de usuário inválido."
+            )
+
+        usuario_existente = buscar_usuario_por_email(
+            email
+        )
+
+        if usuario_existente is not None:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="Já existe um usuário cadastrado com este e-mail."
+            )
+
+        senha_hash = generate_password_hash(
+            senha
+        )
+
+        try:
+
+            inserir_usuario(
+                nome=nome,
+                email=email,
+                senha_hash=senha_hash,
+                perfil=perfil
+            )
+
+        except Exception:
+
+            return render_template(
+                "cadastrar_usuario.html",
+                erro="Não foi possível cadastrar o usuário."
+            )
+
+        return redirect(
+            url_for("usuarios")
+        )
+
+    return render_template(
+        "cadastrar_usuario.html",
+        erro=None
+    )
+
+# ============================================================
+# ALTERAR STATUS DO USUÁRIO
+# ============================================================
+
+@app.route(
+    "/usuarios/<int:usuario_id>/status",
+    methods=["POST"]
+)
+def alterar_status_usuario(usuario_id):
+
+    if not usuario_eh_administrador():
+        return (
+            "Acesso não autorizado.",
+            403
+        )
+
+    # Impede o administrador de desativar a própria conta.
+    if usuario_id == session.get("usuario_id"):
+        return (
+            "Não é possível desativar o próprio usuário.",
+            400
+        )
+
+    usuario = buscar_usuario_por_id(
+        usuario_id
+    )
+
+    if usuario is None:
+        return (
+            "Usuário não encontrado.",
+            404
+        )
+
+    status_atual = usuario[5]
+
+    novo_status = not status_atual
+
+    atualizar_status_usuario(
+        usuario_id,
+        novo_status
+    )
+
+    return redirect(
+        url_for("usuarios")
+    )
 
 # ============================================================
 # DASHBOARD
@@ -384,7 +738,6 @@ def excluir_motorista_rota(motorista_id):
     return redirect(
         url_for("motoristas")
     )
-
 
 # ============================================================
 # FUNCIONÁRIOS
@@ -1589,4 +1942,3 @@ if __name__ == "__main__":
     app.run(
         debug=True
     )
-

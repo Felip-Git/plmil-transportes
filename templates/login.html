@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Login | PL Mil Transportes
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 24px;
+
+            background: #f4f6f9;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            color: #111827;
+        }
+
+        .tela-login {
+            width: 100%;
+            max-width: 430px;
+        }
+
+        .login-card {
+            background: #ffffff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 14px;
+
+            padding: 38px 36px;
+
+            box-shadow:
+                0 10px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .login-cabecalho {
+            text-align: center;
+
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            width: 58px;
+            height: 58px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background: #2563eb;
+
+            color: #ffffff;
+
+            font-size: 21px;
+            font-weight: 700;
+
+            letter-spacing: -0.5px;
+        }
+
+        .login-titulo {
+            margin-bottom: 7px;
+
+            color: #111827;
+
+            font-size: 22px;
+            font-weight: 700;
+
+            letter-spacing: -0.3px;
+        }
+
+        .login-descricao {
+            color: #6b7280;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        .campo {
+            margin-bottom: 18px;
+        }
+
+        .campo label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #374151;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .campo input {
+            width: 100%;
+
+            height: 44px;
+
+            padding: 0 13px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            color: #111827;
+
+            font-size: 13px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .campo input::placeholder {
+            color: #9ca3af;
+        }
+
+        .campo input:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+        .campo-senha {
+            position: relative;
+        }
+
+        .campo-senha input {
+            padding-right: 72px;
+        }
+
+        .botao-senha {
+            position: absolute;
+
+            right: 10px;
+            bottom: 0;
+
+            height: 44px;
+
+            border: none;
+
+            background: transparent;
+
+            color: #6b7280;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        .botao-senha:hover {
+            color: #2563eb;
+        }
+
+        .mensagem-erro {
+            margin-bottom: 18px;
+
+            padding: 11px 13px;
+
+            border: 1px solid #fecaca;
+
+            border-radius: 8px;
+
+            background: #fef2f2;
+
+            color: #b91c1c;
+
+            font-size: 12px;
+
+            line-height: 1.4;
+        }
+
+        .botao-login {
+            width: 100%;
+
+            height: 44px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #2563eb;
+
+            color: #ffffff;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        .botao-login:hover {
+            background: #1d4ed8;
+        }
+
+        .botao-login:active {
+            transform: translateY(1px);
+        }
+
+        .login-rodape {
+            margin-top: 28px;
+
+            text-align: center;
+
+            color: #9ca3af;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        .login-rodape strong {
+            color: #6b7280;
+
+            font-weight: 600;
+        }
+
+        @media (max-width: 520px) {
+
+            body {
+                padding: 16px;
+            }
+
+            .login-card {
+                padding: 30px 24px;
+            }
+
+            .login-titulo {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <main class="tela-login">
+
+        <section class="login-card">
+
+            <header class="login-cabecalho">
+
+                <div class="logo">
+                    PL
+                </div>
+
+                <h1 class="login-titulo">
+                    PL Mil Transportes
+                </h1>
+
+                <p class="login-descricao">
+                    Gestão de transportes
+                </p>
+
+            </header>
+
+
+            {% if erro %}
+
+                <div class="mensagem-erro">
+                    {{ erro }}
+                </div>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                action="{{ url_for('login') }}"
+            >
+
+                <input
+                    type="hidden"
+                    name="proxima"
+                    value="{{ proxima }}"
+                >
+
+
+                <div class="campo">
+
+                    <label for="email">
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Digite seu e-mail"
+                        autocomplete="username"
+                        required
+                        autofocus
+                    >
+
+                </div>
+
+
+                <div class="campo campo-senha">
+
+                    <label for="senha">
+                        Senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="botao-senha"
+                        id="mostrarSenha"
+                    >
+                        Mostrar
+                    </button>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="botao-login"
+                >
+                    Entrar
+                </button>
+
+            </form>
+
+
+            <footer class="login-rodape">
+
+                <strong>
+                    PL Mil Transportes
+                </strong>
+
+                <br>
+
+                Sistema de gestão de transportes
+
+            </footer>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        const campoSenha =
+            document.getElementById("senha");
+
+        const botaoMostrarSenha =
+            document.getElementById("mostrarSenha");
+
+
+        botaoMostrarSenha.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    campoSenha.type === "password"
+                ) {
+
+                    campoSenha.type = "text";
+
+                    botaoMostrarSenha.textContent =
+                        "Ocultar";
+
+                } else {
+
+                    campoSenha.type = "password";
+
+                    botaoMostrarSenha.textContent =
+                        "Mostrar";
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

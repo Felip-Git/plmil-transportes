@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}
+Usuários | PL Mil Transportes
+{% endblock %}
+
+{% block topbar_title %}
+Usuários
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Usuários
+        </h1>
+
+        <p class="page-description">
+            Gerencie os usuários que possuem acesso ao sistema.
+        </p>
+    </div>
+
+    <a href="{{ url_for('cadastrar_usuario') }}" class="botao-primario">
+        + Novo usuário
+    </a>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div>
+            <h2 class="card-title">
+                Usuários cadastrados
+            </h2>
+
+            <p class="card-description">
+                Consulte os usuários e seus respectivos níveis de acesso.
+            </p>
+        </div>
+
+    </div>
+
+
+    {% if usuarios %}
+
+    <div class="tabela-container">
+
+        <table class="tabela">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Nome
+                    </th>
+
+                    <th>
+                        E-mail
+                    </th>
+
+                    <th>
+                        Perfil
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Criado em
+                    </th>
+
+                    <th>
+                        Ações
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for usuario in usuarios %}
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            {{ usuario[1] }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+                        {{ usuario[2] }}
+                    </td>
+
+
+                    <td>
+
+                        {% if usuario[3] == "ADMINISTRADOR" %}
+
+                        <span class="status-badge status-admin">
+                            Administrador
+                        </span>
+
+                        {% else %}
+
+                        <span class="status-badge status-operador">
+                            Operador
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if usuario[4] %}
+
+                        <span class="status-badge status-ativo">
+                            Ativo
+                        </span>
+
+                        {% else %}
+
+                        <span class="status-badge status-inativo">
+                            Inativo
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if usuario[5] %}
+
+                        {{ usuario[5].strftime("%d/%m/%Y") }}
+
+                        {% else %}
+
+                        -
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="acoes-tabela">
+
+                            {% if usuario[0] == session.get("usuario_id") %}
+
+                            <button
+                                type="button"
+                                class="botao-visualizar"
+                                title="Não é possível desativar o usuário atual"
+                                disabled
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <circle
+                                        cx="12"
+                                        cy="12"
+                                        r="9"
+                                    ></circle>
+
+                                    <line
+                                        x1="8"
+                                        y1="8"
+                                        x2="16"
+                                        y2="16"
+                                    ></line>
+
+                                    <line
+                                        x1="16"
+                                        y1="8"
+                                        x2="8"
+                                        y2="16"
+                                    ></line>
+                                </svg>
+
+                            </button>
+
+                            {% else %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('alterar_status_usuario', usuario_id=usuario[0]) }}"
+                                onsubmit="return confirm('{% if usuario[4] %}Deseja realmente desativar este usuário?{% else %}Deseja realmente ativar este usuário?{% endif %}');"
+                                style="display: inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="botao-visualizar"
+                                    title="{% if usuario[4] %}Desativar usuário{% else %}Ativar usuário{% endif %}"
+                                >
+
+                                    {% if usuario[4] %}
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <circle
+                                            cx="12"
+                                            cy="12"
+                                            r="9"
+                                        ></circle>
+
+                                        <line
+                                            x1="8"
+                                            y1="12"
+                                            x2="16"
+                                            y2="12"
+                                        ></line>
+                                    </svg>
+
+                                    {% else %}
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <circle
+                                            cx="12"
+                                            cy="12"
+                                            r="9"
+                                        ></circle>
+
+                                        <line
+                                            x1="12"
+                                            y1="8"
+                                            x2="12"
+                                            y2="16"
+                                        ></line>
+
+                                        <line
+                                            x1="8"
+                                            y1="12"
+                                            x2="16"
+                                            y2="12"
+                                        ></line>
+                                    </svg>
+
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="estado-vazio">
+
+        <div class="estado-vazio-icone">
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+
+                <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                ></circle>
+
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+
+            </svg>
+
+        </div>
+
+        <h3>
+            Nenhum usuário cadastrado
+        </h3>
+
+        <p>
+            Ainda não existem usuários registrados no sistema.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
