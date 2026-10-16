@@ -1,77 +1,45 @@
--- =========================================
--- BANCO DE DADOS - PL MIL TRANSPORTES
--- =========================================
 
--- =========================================
--- EMPRESAS
--- =========================================
+-- ============================================================
+-- BANCO DE DADOS - PL MIL TRANSPORTES
+-- Estrutura atual da aplicação
+-- ============================================================
 
 CREATE TABLE empresa (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(150) NOT NULL
 );
 
-
--- =========================================
--- MOTORISTAS
--- =========================================
-
 CREATE TABLE motorista (
     id SERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL
+    nome VARCHAR(150) NOT NULL,
+    valor_km NUMERIC(10, 2) NOT NULL
 );
-
-
--- =========================================
--- FUNCIONÁRIOS
--- =========================================
 
 CREATE TABLE funcionario (
     id SERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL
-);
-
-
--- =========================================
--- PEDIDOS
--- =========================================
-
-CREATE TABLE pedido (
-    id SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
     empresa_id INTEGER NOT NULL,
-    data_criacao DATE NOT NULL DEFAULT CURRENT_DATE,
-
-    CONSTRAINT fk_pedido_empresa
+    CONSTRAINT fk_funcionario_empresa
         FOREIGN KEY (empresa_id)
         REFERENCES empresa(id)
 );
 
-
--- =========================================
--- SERVIÇOS
--- =========================================
-
 CREATE TABLE servico (
     id SERIAL PRIMARY KEY,
-    pedido_id INTEGER NOT NULL,
+    empresa_id INTEGER NOT NULL,
     motorista_id INTEGER NOT NULL,
     data DATE NOT NULL,
-    km NUMERIC(10,2) NOT NULL,
-    valor_km_motorista NUMERIC(10,2) NOT NULL,
+    km NUMERIC(10, 2) NOT NULL,
+    valor_km_motorista NUMERIC(10, 2) NOT NULL,
 
-    CONSTRAINT fk_servico_pedido
-        FOREIGN KEY (pedido_id)
-        REFERENCES pedido(id),
+    CONSTRAINT fk_servico_empresa
+        FOREIGN KEY (empresa_id)
+        REFERENCES empresa(id),
 
     CONSTRAINT fk_servico_motorista
         FOREIGN KEY (motorista_id)
         REFERENCES motorista(id)
 );
-
-
--- =========================================
--- RELAÇÃO SERVIÇO ↔ FUNCIONÁRIO
--- =========================================
 
 CREATE TABLE servico_funcionario (
     servico_id INTEGER NOT NULL,
@@ -88,4 +56,17 @@ CREATE TABLE servico_funcionario (
         FOREIGN KEY (funcionario_id)
         REFERENCES funcionario(id)
         ON DELETE CASCADE
+);
+
+CREATE TABLE usuario (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    senha_hash TEXT NOT NULL,
+    perfil VARCHAR(20) NOT NULL DEFAULT 'OPERADOR',
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_usuario_perfil
+        CHECK (perfil IN ('ADMINISTRADOR', 'OPERADOR'))
 );
