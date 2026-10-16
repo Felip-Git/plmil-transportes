@@ -6,16 +6,25 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
 def conectar_banco():
-    conexao = psycopg2.connect(
-        host="127.0.0.1",
-        port=5432,
-        database="plmil",
-        user="postgres",
-        password=os.getenv("DB_PASSWORD")
-    )
+    database_url = os.getenv("DATABASE_URL")
+
+    if not database_url:
+        # Mantém a conexão local para desenvolvimento
+        conexao = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD")
+        )
+    else:
+        # Usa o PostgreSQL do Render quando DATABASE_URL estiver definida
+        conexao = psycopg2.connect(database_url)
 
     return conexao
+
 
 
 # ============================================================
