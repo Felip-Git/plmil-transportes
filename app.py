@@ -1487,101 +1487,93 @@ def exportar_relatorio_motoristas():
 @app.route("/servicos")
 def servicos():
 
-    empresa_id = request.args.get(
-        "empresa_id"
-    ) or None
-
-    mes = request.args.get(
-        "mes"
-    ) or None
-
-    ano = request.args.get(
-        "ano"
-    ) or None
+    empresa_id = request.args.get("empresa_id") or None
+    mes = request.args.get("mes") or None
+    ano = request.args.get("ano") or None
+    motorista_id = request.args.get("motorista_id") or None
+    data_inicio_texto = request.args.get("data_inicio", "").strip()
+    data_fim_texto = request.args.get("data_fim", "").strip()
 
     if empresa_id and empresa_id.isdigit():
-
-        empresa_id = int(
-            empresa_id
-        )
-
+        empresa_id = int(empresa_id)
     else:
-
         empresa_id = None
 
-    if (
-        mes
-        and mes.isdigit()
-        and 1 <= int(mes) <= 12
-    ):
-
-        mes = int(
-            mes
-        )
-
+    if mes and mes.isdigit() and 1 <= int(mes) <= 12:
+        mes = int(mes)
     else:
-
         mes = None
 
     if ano and ano.isdigit():
-
-        ano = int(
-            ano
-        )
-
+        ano = int(ano)
     else:
-
         ano = None
 
-    lista_servicos = (
-        buscar_servicos_filtrados(
-            empresa_id=empresa_id,
-            mes=mes,
-            ano=ano
-        )
+    if motorista_id and motorista_id.isdigit():
+        motorista_id = int(motorista_id)
+    else:
+        motorista_id = None
+
+    # Datas inválidas são ignoradas. A validação também impede uma faixa invertida.
+    try:
+        data_inicio = datetime.strptime(data_inicio_texto, "%Y-%m-%d").date() if data_inicio_texto else None
+    except ValueError:
+        data_inicio = None
+        data_inicio_texto = ""
+
+    try:
+        data_fim = datetime.strptime(data_fim_texto, "%Y-%m-%d").date() if data_fim_texto else None
+    except ValueError:
+        data_fim = None
+        data_fim_texto = ""
+
+    erro_filtro = None
+    if data_inicio and data_fim and data_inicio > data_fim:
+        erro_filtro = "A data inicial não pode ser posterior à data final."
+        data_inicio = None
+        data_fim = None
+        data_inicio_texto = ""
+        data_fim_texto = ""
+
+    lista_servicos = buscar_servicos_filtrados(
+        empresa_id=empresa_id,
+        mes=mes,
+        ano=ano,
+        motorista_id=motorista_id,
+        data_inicio=data_inicio,
+        data_fim=data_fim
     )
 
     lista_empresas = buscar_empresas()
-
+    lista_motoristas = buscar_motoristas()
     anos = buscar_anos_servicos()
 
     ano_atual = datetime.now().year
-
     if ano_atual not in anos:
-
-        anos.append(
-            ano_atual
-        )
-
-    anos = sorted(
-        anos,
-        reverse=True
-    )
+        anos.append(ano_atual)
+    anos = sorted(anos, reverse=True)
 
     meses = [
-        (1, "Janeiro"),
-        (2, "Fevereiro"),
-        (3, "Março"),
-        (4, "Abril"),
-        (5, "Maio"),
-        (6, "Junho"),
-        (7, "Julho"),
-        (8, "Agosto"),
-        (9, "Setembro"),
-        (10, "Outubro"),
-        (11, "Novembro"),
-        (12, "Dezembro")
+        (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"),
+        (4, "Abril"), (5, "Maio"), (6, "Junho"),
+        (7, "Julho"), (8, "Agosto"), (9, "Setembro"),
+        (10, "Outubro"), (11, "Novembro"), (12, "Dezembro")
     ]
 
     return render_template(
         "servicos.html",
         servicos=lista_servicos,
         empresas=lista_empresas,
+        motoristas=lista_motoristas,
         anos=anos,
         meses=meses,
         empresa_selecionada=empresa_id,
         mes_selecionado=mes,
-        ano_selecionado=ano
+        ano_selecionado=ano,
+        motorista_selecionado=motorista_id,
+        data_inicio_selecionada=data_inicio_texto,
+        data_fim_selecionada=data_fim_texto,
+        erro_filtro=erro_filtro
     )
 
 
