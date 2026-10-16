@@ -1,6 +1,11 @@
 from datetime import datetime
 import os
+import os
 
+print("DATABASE_URL definida:", bool(os.getenv("DATABASE_URL")))
+print("DB_HOST:", os.getenv("DB_HOST"))
+print("DB_NAME:", os.getenv("DB_NAME"))
+print("DB_USER:", os.getenv("DB_USER"))
 from flask import (
     Flask,
     jsonify,
@@ -54,7 +59,8 @@ from database import (
     buscar_usuario_por_id,
     inserir_usuario,
     buscar_usuarios,
-    atualizar_status_usuario
+    atualizar_status_usuario,
+    inserir_avaliacao
 )
 
 
@@ -1923,6 +1929,53 @@ def configuracoes():
         banco_conectado=banco_conectado,
         configuracoes_sistema=configuracoes_sistema
     )
+
+
+# ============================================================
+# AVALIAÇÃO DA PLATAFORMA
+# ============================================================
+
+@app.route("/avaliar", methods=["POST"])
+def avaliar_plataforma():
+    nota_geral = request.form.get("nota_geral", type=int)
+    facilidade = request.form.get("facilidade_navegacao", "").strip()
+    design = request.form.get("design_usabilidade", "").strip()
+    comentario = request.form.get("comentario", "").strip()
+
+    facilidades_validas = {
+        "Muito fácil",
+        "Fácil",
+        "Nem fácil nem difícil",
+        "Difícil",
+        "Muito difícil"
+    }
+
+    designs_validos = {
+        "Muito agradável",
+        "Agradável",
+        "Regular",
+        "Pouco agradável"
+    }
+
+    if (
+        nota_geral not in {1, 2, 3, 4, 5}
+        or facilidade not in facilidades_validas
+        or design not in designs_validos
+    ):
+        return "Dados da avaliação inválidos.", 400
+
+    try:
+        inserir_avaliacao(
+            nota_geral=nota_geral,
+            facilidade_navegacao=facilidade,
+            design_usabilidade=design,
+            comentario=comentario or None
+        )
+    except Exception:
+        app.logger.exception("Erro ao salvar avaliação da plataforma")
+        return "Não foi possível salvar sua avaliação. Tente novamente.", 500
+
+    return redirect(request.referrer or url_for("configuracoes"))
 
 
 # ============================================================

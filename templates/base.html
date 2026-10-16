@@ -739,6 +739,122 @@
 
     </div>
 
+    <!-- WIDGET DE AVALIACAO -->
+    <button
+        type="button"
+        id="feedback-toggle"
+        class="feedback-toggle"
+        aria-controls="feedback-panel"
+        aria-expanded="false"
+    >
+        ★ Avalie nossa plataforma
+    </button>
+
+    <section
+        id="feedback-panel"
+        class="feedback-panel"
+        aria-labelledby="feedback-title"
+        hidden
+    >
+        <div class="feedback-header">
+            <div>
+                <h2 id="feedback-title">Sua opinião importa!</h2>
+                <p>Ajude-nos a melhorar o PL Mil Transportes.</p>
+            </div>
+
+            <button
+                type="button"
+                id="feedback-close"
+                class="feedback-close"
+                aria-label="Fechar avaliação"
+            >
+                &times;
+            </button>
+        </div>
+
+        <form method="POST" action="{{ url_for('avaliar_plataforma') }}">
+            <fieldset class="feedback-fieldset">
+                <legend>1. Como você avalia sua experiência geral?</legend>
+
+                <div class="feedback-stars">
+                    {% for estrela in range(1, 6) %}
+                    <label>
+                        <input
+                            type="radio"
+                            name="nota_geral"
+                            value="{{ estrela }}"
+                            required
+                        >
+                        <span aria-label="{{ estrela }} estrela(s)">★</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <fieldset class="feedback-fieldset">
+                <legend>2. Quão fácil foi encontrar o que procurava?</legend>
+
+                {% for opcao in [
+                    "Muito fácil",
+                    "Fácil",
+                    "Nem fácil nem difícil",
+                    "Difícil",
+                    "Muito difícil"
+                ] %}
+                <label class="feedback-option">
+                    <input
+                        type="radio"
+                        name="facilidade_navegacao"
+                        value="{{ opcao }}"
+                        required
+                    >
+                    {{ opcao }}
+                </label>
+                {% endfor %}
+            </fieldset>
+
+            <fieldset class="feedback-fieldset">
+                <legend>3. Como você avalia o design e a usabilidade?</legend>
+
+                {% for opcao in [
+                    "Muito agradável",
+                    "Agradável",
+                    "Regular",
+                    "Pouco agradável"
+                ] %}
+                <label class="feedback-option">
+                    <input
+                        type="radio"
+                        name="design_usabilidade"
+                        value="{{ opcao }}"
+                        required
+                    >
+                    {{ opcao }}
+                </label>
+                {% endfor %}
+            </fieldset>
+
+            <div class="feedback-fieldset">
+                <label for="feedback-comentario">
+                    4. Comentários, sugestões ou problemas (opcional)
+                </label>
+
+                <textarea
+                    id="feedback-comentario"
+                    name="comentario"
+                    rows="3"
+                    maxlength="3000"
+                    placeholder="Conte para nós..."
+                ></textarea>
+            </div>
+
+            <button type="submit" class="feedback-submit">
+                Enviar avaliação
+            </button>
+        </form>
+    </section>
+    <!-- FIM DO WIDGET -->
+
 
     <script
         src="{{ url_for('static', filename='script.js') }}"

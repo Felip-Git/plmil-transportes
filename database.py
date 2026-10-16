@@ -7,9 +7,10 @@ load_dotenv()
 
 
 
+
 def conectar_banco():
     database_url = os.getenv("DATABASE_URL")
-
+    
     if not database_url:
         # Mantém a conexão local para desenvolvimento
         conexao = psycopg2.connect(
@@ -1056,32 +1057,32 @@ def excluir_servico(servico_id):
 # USUÁRIOS
 # ============================================================
 
-def buscar_usuario_por_email(email):
-    conexao = conectar_banco()
-    cursor = conexao.cursor()
+    def buscar_usuario_por_email(email):
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
 
-    cursor.execute(
-        """
-        SELECT
-            id,
-            nome,
-            email,
-            senha_hash,
-            perfil,
-            ativo,
-            criado_em
-        FROM usuario
-        WHERE LOWER(email) = LOWER(%s);
-        """,
-        (email,)
-    )
+        cursor.execute(
+            """
+            SELECT
+                id,
+                nome,
+                email,
+                senha_hash,
+                perfil,
+                ativo,
+                criado_em
+            FROM usuario
+            WHERE LOWER(email) = LOWER(%s);
+            """,
+            (email,)
+        )
 
-    usuario = cursor.fetchone()
+        usuario = cursor.fetchone()
 
-    cursor.close()
-    conexao.close()
+        cursor.close()
+        conexao.close()
 
-    return usuario
+        return usuario
 
 
 def buscar_usuario_por_id(usuario_id):
@@ -1110,6 +1111,36 @@ def buscar_usuario_por_id(usuario_id):
     conexao.close()
 
     return usuario
+
+
+def buscar_usuario_por_email(email):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT
+                id,
+                nome,
+                email,
+                senha_hash,
+                perfil,
+                ativo,
+                criado_em
+            FROM usuario
+            WHERE email = %s;
+            """,
+            (email,)
+        )
+
+        usuario = cursor.fetchone()
+        return usuario
+
+    finally:
+        cursor.close()
+        conexao.close()
+
 
 
 def buscar_usuarios():
@@ -1209,6 +1240,45 @@ def excluir_usuario(usuario_id):
         """,
         (usuario_id,)
     )
+
+
+
+def inserir_avaliacao(
+    nota_geral,
+    facilidade_navegacao,
+    design_usabilidade,
+    comentario=None
+):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO avaliacao (
+                nota_geral,
+                facilidade_navegacao,
+                design_usabilidade,
+                comentario
+            )
+            VALUES (%s, %s, %s, %s);
+            """,
+            (
+                nota_geral,
+                facilidade_navegacao,
+                design_usabilidade,
+                comentario or None
+            )
+        )
+
+        conexao.commit()
+
+    except Exception:
+        conexao.rollback()
+        raise
+
+    finally:
+        cursor.close()
 
     conexao.commit()
 

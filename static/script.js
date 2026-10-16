@@ -65,3 +65,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const toggle = document.getElementById("feedback-toggle");
+    const panel = document.getElementById("feedback-panel");
+    const close = document.getElementById("feedback-close");
+
+    if (!toggle || !panel || !close) return;
+
+    function abrirPainel(aberto) {
+        panel.hidden = !aberto;
+        toggle.setAttribute("aria-expanded", String(aberto));
+    }
+
+    toggle.addEventListener("click", function () {
+        abrirPainel(panel.hidden);
+    });
+
+    close.addEventListener("click", function () {
+        abrirPainel(false);
+    });
+});
