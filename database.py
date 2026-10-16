@@ -1028,6 +1028,164 @@ def excluir_servico(servico_id):
         (servico_id,)
     )
 
+    # ============================================================
+# USUÁRIOS
+# ============================================================
+
+def buscar_usuario_por_email(email):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            nome,
+            email,
+            senha_hash,
+            perfil,
+            ativo,
+            criado_em
+        FROM usuario
+        WHERE LOWER(email) = LOWER(%s);
+        """,
+        (email,)
+    )
+
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conexao.close()
+
+    return usuario
+
+
+def buscar_usuario_por_id(usuario_id):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            nome,
+            email,
+            senha_hash,
+            perfil,
+            ativo,
+            criado_em
+        FROM usuario
+        WHERE id = %s;
+        """,
+        (usuario_id,)
+    )
+
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conexao.close()
+
+    return usuario
+
+
+def buscar_usuarios():
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            nome,
+            email,
+            perfil,
+            ativo,
+            criado_em
+        FROM usuario
+        ORDER BY id;
+        """
+    )
+
+    usuarios = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return usuarios
+
+
+def inserir_usuario(
+    nome,
+    email,
+    senha_hash,
+    perfil="OPERADOR"
+):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO usuario (
+            nome,
+            email,
+            senha_hash,
+            perfil
+        )
+        VALUES (%s, %s, %s, %s)
+        RETURNING id;
+        """,
+        (
+            nome,
+            email,
+            senha_hash,
+            perfil
+        )
+    )
+
+    usuario_id = cursor.fetchone()[0]
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+    return usuario_id
+
+
+def atualizar_status_usuario(usuario_id, ativo):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        UPDATE usuario
+        SET ativo = %s
+        WHERE id = %s;
+        """,
+        (
+            ativo,
+            usuario_id
+        )
+    )
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+
+def excluir_usuario(usuario_id):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM usuario
+        WHERE id = %s;
+        """,
+        (usuario_id,)
+    )
+
     conexao.commit()
 
     cursor.close()
