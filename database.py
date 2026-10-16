@@ -476,7 +476,10 @@ def excluir_funcionario(funcionario_id):
 def buscar_servicos_filtrados(
     empresa_id=None,
     mes=None,
-    ano=None
+    ano=None,
+    motorista_id=None,
+    data_inicio=None,
+    data_fim=None
 ):
     conexao = conectar_banco()
     cursor = conexao.cursor()
@@ -533,6 +536,18 @@ def buscar_servicos_filtrados(
             "EXTRACT(YEAR FROM s.data) = %s"
         )
         parametros.append(ano)
+
+    if motorista_id is not None:
+        condicoes.append("s.motorista_id = %s")
+        parametros.append(motorista_id)
+
+    if data_inicio is not None:
+        condicoes.append("s.data >= %s")
+        parametros.append(data_inicio)
+
+    if data_fim is not None:
+        condicoes.append("s.data <= %s")
+        parametros.append(data_fim)
 
     if condicoes:
         consulta += " WHERE " + " AND ".join(condicoes)

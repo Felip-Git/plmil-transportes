@@ -191,6 +191,38 @@ Serviços
 
     </div>
 
+    <div class="filtro">
+        <label for="motorista_id">Motorista</label>
+        <select id="motorista_id" name="motorista_id">
+            <option value="">Todos os motoristas</option>
+            {% for motorista in motoristas %}
+                <option value="{{ motorista[0] }}" {% if motorista_selecionado == motorista[0] %}selected{% endif %}>
+                    {{ motorista[1] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="filtro">
+        <label for="data_inicio">Data inicial</label>
+        <input
+            type="date"
+            id="data_inicio"
+            name="data_inicio"
+            value="{{ data_inicio_selecionada }}"
+        >
+    </div>
+
+    <div class="filtro">
+        <label for="data_fim">Data final</label>
+        <input
+            type="date"
+            id="data_fim"
+            name="data_fim"
+            value="{{ data_fim_selecionada }}"
+        >
+    </div>
+
     <button
         type="submit"
         class="botao-principal"
@@ -207,6 +239,11 @@ Serviços
 
 </form>
 
+{% if erro_filtro %}
+    <p class="card-description" role="alert" style="color: #b42318; margin-top: 12px;">
+        {{ erro_filtro }}
+    </p>
+{% endif %}
 
 </div>
 
@@ -247,7 +284,7 @@ Serviços
 
                 {{ servicos|length }} serviço(s) encontrado(s).
 
-            {% elif empresa_selecionada or mes_selecionado or ano_selecionado %}
+            {% elif empresa_selecionada or mes_selecionado or ano_selecionado or motorista_selecionado or data_inicio_selecionada or data_fim_selecionada %}
 
                 Nenhum serviço corresponde aos filtros selecionados.
 
@@ -480,7 +517,7 @@ Serviços
 
         <span>
 
-            {% if empresa_selecionada or mes_selecionado or ano_selecionado %}
+            {% if empresa_selecionada or mes_selecionado or ano_selecionado or motorista_selecionado or data_inicio_selecionada or data_fim_selecionada %}
 
                 Não existem serviços para os filtros selecionados.
 
